@@ -1,0 +1,23 @@
+<div class="container mt-2 mb-2 pt-2 pb-2">
+    <fieldset class="border p-2">
+        <legend>Seleccionar Periodo</legend>
+        <form class="" action="{{accion}}" method="GET">
+            <div class="row">
+                <div class="col">
+                    <select class="form-select" id="ano_mes" name="ano_mes">
+                        % for fecha in fechas:
+                        % valor = fecha[0][:7]
+                        <option value="{{valor}}">{{valor}}</option>
+                        % end
+                    </select>
+                </div>
+                <div class="col">
+                    <div class="container btn-group">
+                        <button class="btn btn-primary w-100" type="submit" value="Consultar">Consultar Periodo</button>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </fieldset>
+</div>

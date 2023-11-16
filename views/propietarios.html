@@ -1,0 +1,83 @@
+% include('esqueleto.html')
+% include('navbar.html')
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            % include('sidebar.html')
+            
+        </div>
+
+        <div class="col-sm-9">
+
+            <div class="container">
+                <h1>Listado</h1>
+            </div>
+
+            <div class="container">
+                % include('form_propietario.html')
+            </div>
+
+            <div class="container">
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Ed.</th>
+                            <th>Apart.</th>
+                            <th>Propietario</th>
+                            <th>Correo</th>
+                            <th>Tlf</th>
+                            <th class="">Cuotas</th>
+                            <th class="">Saldo</th>
+                            <th class="">Acciones</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % for x in unidades:
+                        <tr>
+                            <td>{{x[0]}}</td>
+                            <td>{{x[1]}}</td>
+                            <td>{{x[2]}}</td>
+                            <td>{{x[3]}}</td>
+                            <td>{{x[4]}}</td>
+                            <td>{{x[5]}}/{{x[6]}}/{{x[7]}}/{{x[8]}}</td>
+                            <td>{{x[9]}}</td>
+                            <td>
+                                <i class="material-icons text-warning" style="cursor: pointer;" title="Editar"
+                                    data-edificio="{{x[0]}}" data-apartamento="{{x[1]}}" data-propietario="{{x[2]}}"
+                                    data-correo="{{x[3]}}" data-telefono="{{x[4]}}" data-cuota_comun="{{x[5]}}"
+                                    data-cuota_edificio="{{x[6]}}" data-cuota_agua="{{x[7]}}" data-cuota_otro="{{x[8]}}"
+                                    onclick="editarPropietario(event)">edit</i>
+                            </td>
+                        </tr>
+                        % end
+                    </tbody>
+                    <tfoot>
+
+                    </tfoot>
+                </table>
+            </div>
+
+
+        </div>
+
+
+
+
+
+    </div>
+
+
+
+</div>
+
+
+
+
+
+% include('footer.html')

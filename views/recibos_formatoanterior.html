@@ -1,0 +1,137 @@
+% include('esqueleto.html')
+% include('navbar.html')
+
+
+
+
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-sm-3">
+            % include('sidebar.html')
+        </div>
+
+        <div class="col-sm-9">
+
+            <div class="container">
+                <h1>Ingresar Recibo</h1>
+                <p>Algo de texto...{{operacion}}</p>
+            </div>
+
+            <form class="" action="/registrarrecibo" method="POST">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="edificio" name="edificio" required>
+                            <label for="edificio">Edificio:</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="text" id="apartamento" name="apartamento" required>
+                            <label for="apartamento">Apartamento:</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-floating mb-3 mt-3">
+                    <input class="form-control text-primary" type="date" id="fecha" name="fecha" required>
+                    <label for="fecha">Fecha</label>
+                </div>
+                <div class="form-floating mb mt-3">
+                    <input class="form-control text-primary" type="textarea" id="concepto" name="concepto">
+                    <label for="correo">Concepto:</label>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="cuota_comun" name="cuota_comun" min="0"
+                                value="20" required >
+                            <label for="cuota_comun">Cuota Comun:</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="cuota_edificio" name="cuota_edificio" min="0"
+                                value="0" required>
+                            <label for="cuota_edificio">Cuota del Edificio:</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="cuota_agua" name="cuota_agua" min="0"
+                                value="0" required>
+                            <label for="cuota_agua">Cuota por Agua:</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="cuota_otro" name="cuota_otro" min="0"
+                                value="0" required>
+                            <label for="cuota_otro">Cuota (Otros):</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="container mt-3">
+                    <button class="btn btn-primary " type="submit" value="Guardar">Guardar</button>
+                </div>
+            </form>
+        
+        
+      <div class="table-responsive">
+        <table class="table">
+
+          <div class="container">
+            <h1>Ultimos agregados</h1>
+            <p>Resultado de la operacion: {{operacion}}</p>
+          </div>
+          <thead class="">
+            <tr>
+              <th>#</th>
+              <th>Edificio</th>
+              <th>Apartamento</th>
+              <th>Fecha</th>
+              <th>Concepto</th>
+              <th>Cuota Comun</th>
+              <th>Cuota Edificio</th>
+              <th>Cuota Agua</th>
+              <th>Cuota Otros</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          % import sqlite3
+          % con = sqlite3.connect("terranorte.db")
+          % cur = con.cursor()
+          % cur.execute('''SELECT rowid, edificio, apartamento,
+          fecha, concepto, cuota_comun, cuota_edificio, cuota_agua, cuota_otro
+          FROM recibos WHERE procesado=0 ORDER BY rowid DESC LIMIT 10''')
+          % datos = cur.fetchall()
+          % for x in datos:
+          <tr>
+            <td>{{x[0]}}</td>
+            <td>{{x[1]}}</td>
+            <td>{{x[2]}}</td>
+            <td>{{x[3]}}</td>
+            <td>{{x[4]}}</td>
+            <td>{{x[5]}}</td>
+            <td>{{x[6]}}</td>
+            <td>{{x[7]}}</td>
+            <td>{{x[8]}}</td>
+            <td><a class="text-danger"  href="/eliminarrecibo/{{x[0]}}" title="Eliminar" ><span class="material-icons">
+                backspace
+              </span></a>
+              
+            </td>
+          </tr>
+          % end
+          % cur.close()
+          % con.close()
+        </table>
+        </div>
+    </div>
+</div>
+
+
+
+% include('footer.html')
+
+

@@ -1,0 +1,60 @@
+% include('esqueleto.html')
+% include('navbar.html')
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            % include('sidebar.html')
+        </div>
+
+
+
+        <div class="col-sm-9">
+            <div class="container">
+                <h1>Consultar pagos recibidos</h1>
+
+                % include('select_propietario.html', accion='/pagos/consultar')
+                % include('select_fecha.html', accion='/pagos/consultar')
+
+            </div>
+
+            <!-- tabla pagos rowid + 8 values = 9 -->
+
+            <div class="container">
+                <table class="table">
+                    <captio>Resultado de la Consulta</captio>
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Ed.</th>
+                            <th class="text-center">Ap.</th>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-end">Ref</th>
+                            <th class="text-end">BsD</th>
+                            <th class="text-end">$USD</th>
+                            <th class="text-end">Total $USD</th>
+                            <th class="text-end">Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % for x in datos_tabla:
+                        <tr>
+                            <td class="text-center">{{x[0]}}</td>
+                            <td class="text-center">{{x[1]}}</td>
+                            <td class="text-center">{{x[2]}}</td>
+                            <td class="text-center">{{x[3]}}</td>
+                            <td class="text-end">{{x[4]}}</td>
+                            <td class="text-end">{{x[5]}}</td>
+                            <td class="text-end">{{x[6]}}</td>
+                            <td class="text-end">{{x[7]}}</td>
+                            <td class="text-end">{{x[8]}}</td>
+                        </tr>
+                        % end
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

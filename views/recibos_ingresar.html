@@ -1,0 +1,70 @@
+% include('esqueleto.html')
+% include('navbar.html')
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            % include('sidebar.html')
+        </div>
+        <div class="col-sm-9">
+            <div class="container">
+                <h1>Ingresar Recibo</h1>
+            </div>
+            % include('form_recibo.html', accion = '/recibos/almacenar')
+
+            <div class="container">
+                <table class="table table-responsive caption-top">
+                    <caption style="font-weight: bold;">Ultimos Ingresados</caption>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Edificio</th>
+                            <th>Apartamento</th>
+                            <th>Fecha</th>
+                            <th>Concepto</th>
+                            <th>Cuotas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- rowid, edificio, apartamento, fecha, concepto, cuota_comun, cuota_edificio, cuota_agua, cuota_otro
+                        FROM recibos WHERE procesado = 0 -->
+                        % for recibo in ultimos:
+                        <tr>
+                            <td>{{recibo[0]}}</td>
+                            <td>{{recibo[1]}}</td>
+                            <td>{{recibo[2]}}</td>
+                            <td>{{recibo[3]}}</td>
+                            <td>{{recibo[4]}}</td>
+                            <td>{{recibo[5]}}/{{recibo[6]}}/{{recibo[7]}}/{{recibo[8]}}</td>
+                            <td>
+                                <a href="/recibos/eliminar/{{recibo[0]}}">
+                                    <i class="material-icons text-danger" onclick="deletePrevent(event)"
+                                        style="cursor:pointer;" title="Elimiinar Recibo">backspace</i>
+                                </a>
+                            </td>
+                        </tr>
+                        % end
+
+
+
+                    </tbody>
+
+                    <tfoot>
+
+                    </tfoot>
+
+                </table>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/myscript.js"></script>

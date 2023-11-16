@@ -1,0 +1,30 @@
+% include('esqueleto.html')
+% include('header.html')
+
+
+<h1>Hola Ito</h1>
+<table class="w3-table-all">
+    <tr class="">
+      <th class="w3-center">Edificio</th>
+      <th class="w3-center">Apartamento</th>
+      <th class="">Propietario</th>
+      <th class="w3-right-align">Recibos</th>
+      <th class="w3-right-align">Monto $</th>
+    </tr>
+% from funciones import deuda_general
+% lista = deuda_general()
+% monto_general = 0.00
+% for deudor in lista:
+      <tr>
+        <td class="w3-center">{{deudor[0]}}</td>
+        <td class="w3-center">{{deudor[1]}}</td>
+        <td>{{deudor[2]}}</td>
+        <td class="w3-right-align">{{deudor[3]}}</td>
+        <td class="w3-right-align">{{deudor[4]}}</td>
+      </tr>
+    % monto_general += deudor[4] 
+    % end    
+</table>
+<h1>{{monto_general}}</h1>
+
+% include('footer.html')

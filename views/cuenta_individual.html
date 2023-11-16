@@ -1,0 +1,90 @@
+% include('esqueleto.html')
+
+
+<div class="w3-row w3-border">
+
+    <div class="w3-quarter w3-container" style="border: 1px solid black;">
+        % include('sidebar.html')
+
+    </div>
+    <div class="w3-half w3-container" style="border: 1px solid black;">
+        <form class="w3-container" action="/cuentaindividual" method="GET">
+
+            <label for="propietarios">Propietarios</label>
+            <select class="w3-select" id="propietarios" name="propietario">
+                % import sqlite3
+                % con = sqlite3.connect("terranorte.db")
+                % cur = con.cursor()
+                % cur.execute(''' SELECT edificio, apartamento, propietario FROM unidades''')
+                % propietarios = cur.fetchall()
+                % for propietario in propietarios:
+                % valor = str(propietario[0]) + '-' + propietario[1] + '-' + propietario[2]
+                <option value="{{valor}}">{{ propietario[0] }} - {{propietario[1]}} - {{propietario[2]}}</option>
+                % end
+
+
+            </select>
+            <p>
+                <input class="w3-btn w3-block w3-blue" type="submit" value="Estado de cuenta">
+            </p>
+
+        </form>
+        <p>
+        <h3>Estado de cuenta</h3>
+        <h4>{{edificio}}-{{apartamento}}-{{nombre}}</h4>
+        <h4>Saldo: <i id="saldo"></i></h4>
+    </p>
+        <table class="w3-table w3-bordered">
+            <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Concepto</th>
+                <th>Monto</th>
+            </tr>
+% if edificio and apartamento:
+% cur.execute(f'''SELECT rowid, fecha, concepto, monto_final FROM recibos
+WHERE edificio={edificio} AND apartamento='{apartamento}' ORDER BY fecha ''')
+% recibos = cur.fetchall()
+% saldo = pagos_totales
+% impagos = []
+% for recibo in recibos:
+% if recibo[3] <= saldo:
+% saldo -=recibo[3]
+% else: 
+% impagos.append(recibo)
+% end
+<script>
+    document.getElementById("saldo").innerText = {{saldo}}
+</script>
+% end
+% for recibo in impagos:
+                <tr>
+                <td>{{recibo[0]}}</td>
+                <td>{{recibo[1]}}</td>
+                <td>{{recibo[2]}}</td>
+                <td>{{recibo[3]}}</td>
+                </tr>
+% end
+% end
+% cur.close()
+% con.close()
+
+
+        </table>
+
+
+    </div>
+    <div class="w3-quarter">
+        <h3>Quarter</h3>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+% include('footer.html')

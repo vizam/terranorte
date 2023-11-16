@@ -1,0 +1,71 @@
+% include('esqueleto.html')
+% include('navbar.html')
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            % include('sidebar.html')
+
+        </div>
+
+        <div class="col-sm-9">
+            <div class="container">
+                <h1>Consultar Recibos</h1>
+            </div>
+
+            % include('select_propietario.html', accion = '/recibos/consultar')
+            % include('select_fecha.html', accion = '/recibos/consultar')
+            % include('form_recibo_editar.html')
+            <div class="container">
+                <div class="container">
+                    <h3 class="text-end">{{propietario}}</h3>
+                    <h4 class="text-end">Edificio: {{edificio}}, Apartamento: {{apartamento}}, Monto: USD$ {{monto}}
+                    </h4>
+                </div>
+                <table class="table-responsive table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Recibo</th>
+                            <th class="text-center">Edificio</th>
+                            <th class="text-center">Apartamento</th>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Concepto</th>
+                            <th class="text-end">Monto</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    % for x in tabla:
+                    <tr>
+                        <td class="text-center">{{x[0]}}</td>
+                        <td class="text-center">{{x[1]}}</td>
+                        <td class="text-center">{{x[2]}}</td>
+                        <td class="text-center">{{x[3]}}</td>
+                        <td>{{x[4]}}</td>
+                        <td class="text-end">{{x[5]+x[6]+x[7]+x[8]}}</td>
+                        <td class="text-center">
+                            <i class="material-icons text-warning" style="cursor:pointer;" title="Editar Recibo"
+                                onclick="editarRecibo(event)" data-rowid="{{x[0]}}" data-edificio="{{x[1]}}"
+                                data-apartamento="{{x[2]}}" data-fecha="{{x[3]}}" data-concepto="{{x[4]}}"
+                                data-cuota_comun="{{x[5]}}" data-cuota_edificio="{{x[6]}}" data-cuota_agua="{{x[7]}}"
+                                data-cuota_otro="{{x[8]}}">edit</i>
+                            <a href="/recibos/eliminar/{{x[0]}}">
+                                <i class="material-icons text-danger" style="cursor:pointer;"
+                                    onclick="deletePrevent(event)" title="Elimiinar Recibo">backspace</i>
+                            </a>
+                        </td>
+                    </tr>
+
+
+
+                    % end
+                </table>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/myscript.js"></script>

@@ -1,0 +1,77 @@
+% include('esqueleto.html')
+% include('navbar.html')
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3">
+      % include('sidebar.html')
+    </div>
+
+    <div class="col-sm-9">
+
+      <div class="container">
+        <h1>Ingresar: </h1>
+
+      </div>
+
+
+      % include('form_pagos.html')
+
+
+      <div class="table-responsive">
+        <table class="table">
+
+          <div class="container">
+            <h1>Ultimos agregados</h1>
+            <p>Resultado de la operacion: {{operacion}}</p>
+          </div>
+          <thead>
+            <tr class="text-center">
+              <th>#</th>
+              <th>Edificio</th>
+              <th>Apartamento</th>
+              <th>Fecha</th>
+              <th class="text-end">Referencia</th>
+              <th class="text-end">BsD</th>
+              <th class="text-end">$USD</th>
+              <th class="text-end">Total $USD</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <!-- x is a 9 length element -->
+          % for x in ultimos:
+          <tr>
+            <td>{{x[0]}}</td>
+            <td class="text-center">{{x[1]}}</td>
+            <td class="text-center">{{x[2]}}</td>
+            <td class="text-center">{{x[3]}}</td>
+            <td class="text-end">{{x[4]}}</td>
+            <td class="text-end">{{round(x[5],2)}}</td>
+            <td class="text-end">{{round(x[6],2)}}</td>
+            <td class="text-end">{{round(x[7],2)}}</td>
+            <td class="text-center"><a class="text-danger" href=/pagos/eliminar/{{x[0]}} title="Eliminar" onclick="deletePrevent(event)"><span class="material-icons">
+                  backspace
+                </span></a>
+
+            </td>
+          </tr>
+          % end
+         
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  tasa = localStorage.getItem('tasa') !== null ? localStorage.getItem('tasa') : 0;
+  document.querySelector("input[name='tasa']").value = tasa;
+</script>
+
+
+% include('footer.html')

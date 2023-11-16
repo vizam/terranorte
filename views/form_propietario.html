@@ -1,0 +1,66 @@
+<div class="container">
+    <fieldset disabled>
+        <legend>Editar Propietario</legend>
+        <form class="" id='editar_propietario' action="#" method="POST" disabled>
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-muted" type="number" id="edificio" name="edificio" readonly>
+                        <label for="edificio">Edificio:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-muted" type="text" id="apartamento" name="apartamento" readonly>
+                        <label for="apartamento">Apartamento:</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-floating mb-3 mt-3">
+                <input class="form-control text-primary" type="text" id="propietario" name="propietario">
+                <label for="propietario">Propietario</label>
+            </div>
+            <div class="form-floating mb mt-3">
+                <input class="form-control text-primary" type="email" id="correo" name="correo">
+                <label for="correo">Correo:</label>
+            </div>
+            <div class="form-floating mb mt-3">
+                <input class="form-control text-primary" type="tel" id="telefono" name="telefono">
+                <label for="telefono">Telefono:</label>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="number" id="cuota_comun" name="cuota_comun"
+                            min="0" required>
+                        <label for="cuota_comun">Cuota Comun:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="number" id="cuota_edificio" name="cuota_edificio"
+                            min="0" required>
+                        <label for="cuota_edificio">Cuota del Edificio:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="number" id="cuota_agua" name="cuota_agua" min="0"
+                            required>
+                        <label for="cuota_agua">Cuota por Agua:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="number" id="cuota_otro" name="cuota_otro" min="0"
+                            required>
+                        <label for="cuota_otro">Cuota (Otros):</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <button class="btn btn-warning w-100" type="submit" value="Editar">Editar</button>
+            </div>
+        </form>
+    </fieldset>
+</div>

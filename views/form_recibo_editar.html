@@ -1,0 +1,75 @@
+<div class="container mt-3 mb-3">
+    <fieldset class="border p-2" form="editar_recibo" disabled>
+        <legend>Editar Recibo</legend>
+        <form class="" id='editar_recibo' action="#" method="POST">
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-muted" type="number" id="rowid" name="rowid" required>
+                        <label for="rowid">#</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-muted" type="number" id="edificio" name="edificio" required>
+                        <label for="edificio">Edificio:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-muted" type="text" id="apartamento" name="apartamento" required>
+                        <label for="apartamento">Apartamento:</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-muted" type="date" id="fecha" name="fecha" required>
+                        <label for="fecha">Fecha</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="textarea" id="concepto" name="concepto">
+                        <label for="concepto">Concepto:</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="number" id="cuota_comun" name="cuota_comun"
+                            min="0" value="20" required>
+                        <label for="cuota_comun">Cuota Comun:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="number" id="cuota_edificio" name="cuota_edificio"
+                            min="0" value="0" required>
+                        <label for="cuota_edificio">Cuota del Edificio:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="number" id="cuota_agua" name="cuota_agua" min="0"
+                            value="0" required>
+                        <label for="cuota_agua">Cuota por Agua:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating mt-3">
+                        <input class="form-control text-primary" type="number" id="cuota_otro" name="cuota_otro" min="0"
+                            value="0" required>
+                        <label for="cuota_otro">Cuota (Otros):</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <button class="btn btn-warning w-100" formaction="/recibos/editar"
+                    type="submit">Editar</button>
+            </div>
+        </form>
+    </fieldset>
+</div>

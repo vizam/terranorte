@@ -1,0 +1,34 @@
+<div class="container mt-2 mb-2 border-top">
+    <fieldset>
+        <legend>Seleccionar Periodo</legend>
+        <form class="" action="/recibos/mes" method="GET">
+            <div class="row">
+                <div class="col">
+                    <select class="form-select" id="ano_mes" name="ano_mes">
+                        % import sqlite3
+                        % con = sqlite3.connect("terranorte.db")
+                        % cur = con.cursor()
+                        % cur.execute(''' SELECT DISTINCT fecha FROM recibos ORDER BY fecha''')
+                        % fechas = cur.fetchall()
+                        % for fecha in fechas:
+                        % valor = fecha[0][:7]
+                        <option value="{{valor}}">{{valor}}</option>
+                        % end
+                        % cur.close()
+                        % con.close()
+                    </select>
+                </div>
+                <div class="col">
+                    <div class="container btn-group">
+                        <button class="btn btn-primary w-100" type="submit" value="Consultar"
+                            title="Mostrar todos los recibos creados en ese periodo">Consultar Recibos</button>
+                        <button class="btn btn-danger w-100" type="submit" value="Elminar"
+                            formaction="/recibos/eliminar/mes/{{valor}}" formmethod="POST"
+                            onclick="deleteMesPrevent(event)"
+                            title="Eliminar todos los recibos creados en ese periodo">Eliminar Todo el Mes</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </fieldset>
+</div>

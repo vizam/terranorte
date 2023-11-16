@@ -1,0 +1,156 @@
+% include('esqueleto.html')
+% include('navbar.html')
+
+
+
+
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-sm-3">
+            % include('sidebar.html')
+        </div>
+
+        <div class="col-sm-9">
+
+            <div class="container">
+                <h1>Editar Recibos NO PROCESADOS</h1>
+                <p>Algo de texto...</p>
+            </div>
+
+            <form class="" action="/editar/recibo" method="POST">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-muted" type="number" id="rowid" name="rowid" readonly
+                                required>
+                            <label for="rowid">#</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-muted" type="number" id="edificio" name="edificio" readonly
+                                required>
+                            <label for="edificio">Edificio:</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-muted" type="text" id="apartamento" name="apartamento"
+                                readonly required>
+                            <label for="apartamento">Apartamento:</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-floating mb-3 mt-3">
+                    <input class="form-control text-muted" type="date" id="fecha" name="fecha" readonly required>
+                    <label for="fecha">Fecha</label>
+                </div>
+                <div class="form-floating mb mt-3">
+                    <input class="form-control text-primary" type="textarea" id="concepto" name="concepto">
+                    <label for="concepto">Concepto:</label>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="cuota_comun" name="cuota_comun"
+                                min="0" value="20" required>
+                            <label for="cuota_comun">Cuota Comun:</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="cuota_edificio"
+                                name="cuota_edificio" min="0" value="0" required>
+                            <label for="cuota_edificio">Cuota del Edificio:</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="cuota_agua" name="cuota_agua"
+                                min="0" value="0" required>
+                            <label for="cuota_agua">Cuota por Agua:</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mt-3">
+                            <input class="form-control text-primary" type="number" id="cuota_otro" name="cuota_otro"
+                                min="0" value="0" required>
+                            <label for="cuota_otro">Cuota (Otros):</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="container mt-3">
+                    <button class="btn btn-primary" type="submit">Actualizar</button>
+                </div>
+            </form>
+            <div class="table-responsive h-50">
+                <table class="table">
+
+                    <div class="container">
+                        <h1>Recibos NO PROCESADOS</h1>
+                        <p>Resultado de la operacion: </p>
+                    </div>
+                    <thead class="">
+                        <tr>
+                            <th>#</th>
+                            <th>Ed</th>
+                            <th>Apto</th>
+                            <th>Fecha</th>
+                            <th>Concepto</th>
+                            <th>Gastos Comunes</th>
+                            <th>Edif</th>
+                            <th>H2O</th>
+                            <th>Otros</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    % import sqlite3
+                    % con = sqlite3.connect("terranorte.db")
+                    % cur = con.cursor()
+                    % cur.execute('''SELECT rowid, edificio, apartamento,
+                    fecha, concepto, cuota_comun, cuota_edificio, cuota_agua, cuota_otro
+                    FROM recibos WHERE procesado=0 ORDER BY fecha DESC LIMIT 100 ''')
+                    % datos = cur.fetchall()
+                    % for x in datos:
+                    <tr data-rowid={{x[0]}}>
+                        <td>{{x[0]}}</td>
+                        <td>{{x[1]}}</td>
+                        <td>{{x[2]}}</td>
+                        <td>{{x[3]}}</td>
+                        <td>{{x[4]}}</td>
+                        <td>{{x[5]}}</td>
+                        <td>{{x[6]}}</td>
+                        <td>{{x[7]}}</td>
+                        <td>{{x[8]}}</td>
+
+                        <td>
+                            <span class="material-icons" onclick="editarRecibo(event)" data-rowid={{x[0]}}>edit</span>
+                        </td>
+                    </tr>
+                    % end
+                    % cur.close()
+                    % con.close()
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script src="/static/js/myscript.js">
+        
+    </script>
+
+
+
+
+
+
+
+
+
+    % include('footer.html')

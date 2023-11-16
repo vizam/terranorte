@@ -1,0 +1,98 @@
+% include('esqueleto.html')
+% include('header.html')
+
+
+<div class="w3-row w3-border">
+
+    <div class="w3-third w3-container w3-light-grey" style="border: 1px solid black;">
+        % include('sidebar.html')
+        <h3>Operacion: {{resultado}}</h3>
+    </div>
+
+
+
+    <div class="w3-twothird w3-container" style="border: 1px solid black;">
+        <form class="w3-container" action='/cargamasiva/recibos' method='POST'>
+            <div class="w3-container w3-blue">
+                <h2>Generar Recibos</h2>
+            </div>
+            <p>
+            <h3>Todas las propiedades</h3>
+            </p>
+            <p>
+                <label>Fecha</label>
+                <input class="w3-input" type="date" name="fecha" required>
+            </p>
+            <p>
+                <label>Concepto</label>
+                <input class="w3-input" type="text" name="concepto">
+            </p>
+
+            <p>
+                <label>Monto $USD</label>
+                <input class="w3-input" type="number" name="monto_ordinario" required>
+            </p>
+            <p>
+                <label>Descuento $USD</label>
+                <input class="w3-input" type="number" name="descuento">
+            </p>
+            <p>
+                <input class="w3-btn w3-block w3-blue" type="submit" value="Enviar">
+            </p>
+        </form>
+
+        <!-- <table class="w3-table w3-bordered">
+            <caption class="w3-block w3-xlarge">Ultimo agregado</caption>
+            <tr>
+                <th>#</th>
+                <th>Edificio</th>
+                <th>Apartamento</th>
+                <th>Fecha</th>
+                <th>Concepto</th>
+                <th>Monto $USD</th>
+                <th>Descuento $USD</th>
+                <th>Monto Final $USD</th>
+                <th>Acciones</th>
+            </tr>
+            % import sqlite3
+            % con = sqlite3.connect("terranorte.db")
+            % cur = con.cursor()
+            % cur.execute(f'''SELECT rowid, edificio, apartamento,
+            fecha, concepto, monto_ordinario, descuento, monto_final
+            FROM recibos ORDER BY rowid DESC LIMIT 1''')
+            % datos = cur.fetchall()
+            % for x in datos:
+            <tr>
+                <td>{{x[0]}}</td>
+                <td>{{x[1]}}</td>
+                <td>{{x[2]}}</td>
+                <td>{{x[3]}}</td>
+                <td>{{x[4]}}</td>
+                <td>{{x[5]}}</td>
+                <td>{{x[6]}}</td>
+                <td>{{x[7]}}</td>
+                <td>
+                    <a href="#"><i class="material-icons w3-text-blue" title="Editar">edit</i></a>
+                    <a href="/eliminarrecibo/{{x[0]}}"><i class="material-icons w3-text-blue"
+                            title="Eliminiar">clear</i></a>
+                </td>
+
+            </tr>
+            % end
+            % cur.close()
+            % con.close()
+        </table> -->
+
+    </div>
+
+
+
+</div>
+
+
+
+
+
+
+
+% include('footer.html')
