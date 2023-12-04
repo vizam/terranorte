@@ -30,7 +30,8 @@
                             <th class="text-center">Apartamento</th>
                             <th class="text-center">Fecha</th>
                             <th class="text-center">Concepto</th>
-                            <th class="text-end">Monto</th>
+                            <th class="text-end">Cuotas</th>
+                            <th class="text-end">Saldo</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -41,16 +42,16 @@
                         <td class="text-center">{{x[2]}}</td>
                         <td class="text-center">{{x[3]}}</td>
                         <td>{{x[4]}}</td>
-                        <td class="text-end">{{x[5]+x[6]+x[7]+x[8]}}</td>
+                        <td class="text-end">{{x[5]}}/{{x[6]}}</td>
+                        <td class="text-end">{{x[7]}}</td>
                         <td class="text-center">
-                            <i class="material-icons text-warning" style="cursor:pointer;" title="Editar Recibo"
+                            <span class="material-icons text-warning" style="cursor:pointer;" title="Editar Recibo"
                                 onclick="editarRecibo(event)" data-rowid="{{x[0]}}" data-edificio="{{x[1]}}"
                                 data-apartamento="{{x[2]}}" data-fecha="{{x[3]}}" data-concepto="{{x[4]}}"
-                                data-cuota_comun="{{x[5]}}" data-cuota_edificio="{{x[6]}}" data-cuota_agua="{{x[7]}}"
-                                data-cuota_otro="{{x[8]}}">edit</i>
+                                data-cuota_comun="{{x[5]}}" data-cuota_edificio="{{x[6]}}">edit</span>
                             <a href="/recibos/eliminar/{{x[0]}}">
-                                <i class="material-icons text-danger" style="cursor:pointer;"
-                                    onclick="deletePrevent(event)" title="Elimiinar Recibo">backspace</i>
+                                <span class="material-icons text-danger" style="cursor:pointer;"
+                                    onclick="deletePrevent(event)" title="Elimiinar Recibo">backspace</span>
                             </a>
                         </td>
                     </tr>

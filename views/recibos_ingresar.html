@@ -1,10 +1,6 @@
 % include('esqueleto.html')
 % include('navbar.html')
 
-
-
-
-
 <div class="container">
     <div class="row">
         <div class="col-sm-3">
@@ -21,30 +17,32 @@
                     <caption style="font-weight: bold;">Ultimos Ingresados</caption>
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Edificio</th>
-                            <th>Apartamento</th>
-                            <th>Fecha</th>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Edificio</th>
+                            <th class="text-center">Apartamento</th>
+                            <th class="text-center">Fecha</th>
                             <th>Concepto</th>
                             <th>Cuotas</th>
-                            <th>Acciones</th>
+                            <th>Saldo</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- rowid, edificio, apartamento, fecha, concepto, cuota_comun, cuota_edificio, cuota_agua, cuota_otro
+                        <!-- rowid, edificio, apartamento, fecha, concepto, cuota_comun, cuota_edificio
                         FROM recibos WHERE procesado = 0 -->
                         % for recibo in ultimos:
                         <tr>
-                            <td>{{recibo[0]}}</td>
-                            <td>{{recibo[1]}}</td>
-                            <td>{{recibo[2]}}</td>
-                            <td>{{recibo[3]}}</td>
+                            <td class="text-center">{{recibo[0]}}</td>
+                            <td class="text-center">{{recibo[1]}}</td>
+                            <td class="text-center">{{recibo[2]}}</td>
+                            <td class="text-center">{{recibo[3]}}</td>
                             <td>{{recibo[4]}}</td>
-                            <td>{{recibo[5]}}/{{recibo[6]}}/{{recibo[7]}}/{{recibo[8]}}</td>
-                            <td>
+                            <td>{{recibo[5]}}/{{recibo[6]}}</td>
+                            <td>{{recibo[7]}}</td>
+                            <td class="text-center">
                                 <a href="/recibos/eliminar/{{recibo[0]}}">
-                                    <i class="material-icons text-danger" onclick="deletePrevent(event)"
-                                        style="cursor:pointer;" title="Elimiinar Recibo">backspace</i>
+                                    <span class="material-icons text-danger" onclick="deletePrevent(event)"
+                                        style="cursor:pointer;" title="Elimiinar Recibo">backspace</span>
                                 </a>
                             </td>
                         </tr>
@@ -67,4 +65,3 @@
     </div>
 </div>
 
-<script src="/static/js/myscript.js"></script>

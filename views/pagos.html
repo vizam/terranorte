@@ -35,29 +35,40 @@
               <th class="text-end">Referencia</th>
               <th class="text-end">BsD</th>
               <th class="text-end">$USD</th>
-              <th class="text-end">Total $USD</th>
+              <th class="text-end">Saldo $USD</th>
               <th>Acciones</th>
             </tr>
           </thead>
-          <!-- x is a 9 length element -->
           % for x in ultimos:
           <tr>
-            <td>{{x[0]}}</td>
+            <td class="text-center">{{x[0]}}</td>
             <td class="text-center">{{x[1]}}</td>
             <td class="text-center">{{x[2]}}</td>
             <td class="text-center">{{x[3]}}</td>
             <td class="text-end">{{x[4]}}</td>
-            <td class="text-end">{{round(x[5],2)}}</td>
-            <td class="text-end">{{round(x[6],2)}}</td>
-            <td class="text-end">{{round(x[7],2)}}</td>
-            <td class="text-center"><a class="text-danger" href=/pagos/eliminar/{{x[0]}} title="Eliminar" onclick="deletePrevent(event)"><span class="material-icons">
+            <td class="text-end">{{x[5]}}</td>
+            <td class="text-end">{{(x[6])}}</td>
+            <td class="text-end">{{(x[7])}}</td>
+            <td class="text-center">
+              % if x[8] == 0:
+              <a class="text-danger" style="text-decoration: none;" href="/pagos/eliminar/{{x[0]}}" title="Eliminar"
+                onclick="deletePrevent(event)">
+                <span class="material-icons">
                   backspace
-                </span></a>
-
+                </span>
+              </a>
+              % end
+              % if x[7] > 0:
+              <a class="text-success" style="text-decoration: none;" href="/pagos/aplicar/{{x[0]}}" title="Aplicar">
+                <span class="material-icons">
+                  paid
+                </span>
+              </a>
+              % end
             </td>
           </tr>
           % end
-         
+
         </table>
 
       </div>

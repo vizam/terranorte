@@ -1,7 +1,7 @@
 <div class="container">
     <fieldset></fieldset>
     <form class="" action="{{accion}}" method="POST">
-    <legend>Propietario</legend>
+        <legend>Propietario</legend>
         <div class="row">
             <div class="col">
                 <div class="form-floating mt-3">
@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="form-floating mt-3">
-            <input class="form-control text-primary" type="date" id="fecha" name="fecha" required>
+            <input class="form-control text-primary" type="month" id="fecha" name="fecha" required>
             <label for="fecha">Fecha</label>
         </div>
         <div class="form-floating mt-3">
@@ -37,20 +37,6 @@
                     <input class="form-control text-primary" type="number" id="cuota_edificio" name="cuota_edificio"
                         min="0" value="0" required>
                     <label for="cuota_edificio">Cuota del Edificio:</label>
-                </div>
-            </div>
-            <div class="col">
-                <div class="form-floating mt-3">
-                    <input class="form-control text-primary" type="number" id="cuota_agua" name="cuota_agua" min="0"
-                        value="0" required>
-                    <label for="cuota_agua">Cuota por Agua:</label>
-                </div>
-            </div>
-            <div class="col">
-                <div class="form-floating mt-3">
-                    <input class="form-control text-primary" type="number" id="cuota_otro" name="cuota_otro" min="0"
-                        value="0" required>
-                    <label for="cuota_otro">Cuota (Otros):</label>
                 </div>
             </div>
         </div>

@@ -76,6 +76,12 @@ function deleteMesPrevent(evt) {
 //     };
 // }
 
+function aplicarPago(evt) {
+    console.log(evt.target.dataset['rowid'])
+}
+
+
+
 function guardarTasa() {
     tasa = document.querySelector("input[id='tasa_dia']").value;
     localStorage.setItem('tasa', tasa);

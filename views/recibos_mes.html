@@ -34,7 +34,9 @@
                             <th class="text-center">Edificio</th>
                             <th class="text-center">Apartamento</th>
                             <th class="text-center">Fecha</th>
-                            <th class="text-end">Monto USD$</th>
+                            <th class="text-center">Concepto</th>
+                            <th class="text-end">Cuotas</th>
+                            <th class="text-end">Saldo</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,7 +46,9 @@
                             <td class="text-center">{{x[1]}}</td>
                             <td class="text-center">{{x[2]}}</td>
                             <td class="text-center">{{x[3]}}</td>
-                            <td class="text-end">{{x[4] + x[5] + x[6] + x[7]}}</td>
+                            <td class="text-center">{{x[4]}}</td>
+                            <td class="text-end">{{ x[5] }} / {{ x[6] }}</td>
+                            <td class="text-end">{{x[7]}}</td>
                         </tr>
                         % end
                     </tbody>

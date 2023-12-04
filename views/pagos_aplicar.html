@@ -1,0 +1,122 @@
+% include('esqueleto.html')
+% include('navbar.html')
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3">
+      % include('sidebar.html')
+    </div>
+
+    <div class="col-sm-9">
+      <h3>Pagos con saldo</h3>
+      <div class="h-50 overflow-y-auto table-responsive border mt-2 mb-2">
+        <table class="table table-striped">
+          <thead>
+            <tr class="text-center">
+              <th>#</th>
+              <th>Edif</th>
+              <th>Apto</th>
+              <th>Fecha</th>
+              <th>Saldo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!--rowid, edificio, apartamento, fecha, saldo -->
+            % for x in pagos_con_saldo:
+            <tr class="text-center">
+              <td>{{x[0]}}</td>
+              <td>{{x[1]}}</td>
+              <td>{{x[2]}}</td>
+              <td>{{x[3]}}</td>
+              <td>{{x[4]}}</td>
+              <td>
+                <a href="/pagos/aplicar/{{x[0]}}">
+                  <span class="material-icons text-primary" id="icon_aplicar">
+                    attach_money
+                  </span>
+                </a>
+              </td>
+            </tr>
+            % end
+          </tbody>
+          <tfoot>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="row">
+        <div class="col">
+
+          <table class="table table-primary">
+            <thead class="">
+              <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th class="text-end">Saldo USD$</th>
+              </tr>
+            </thead>
+            <tbody>
+              % if pago_aplicado:
+              <tr>
+                <td>{{pago_aplicado[0]}}</td>
+                <td>{{pago_aplicado[1]}}</td>
+                % color = 'danger' if pago_aplicado[2] == 0 else ''
+                <td class="text-end fw-bold text-{{color}}">{{pago_aplicado[2]}}</td>
+              </tr>
+              % end
+            </tbody>
+            <tfoot>
+            </tfoot>
+          </table>
+        </div>
+        <div class="col">
+          <table class="table table-success">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Concepto</th>
+                <th class="text-end">Saldo USD$</th>
+              </tr>
+            </thead>
+            <tbody>
+              % for x in recibos_aplicados:
+              <tr>
+                <td>{{x[0]}}</td>
+                <td>{{x[1]}}</td>
+                <td>{{x[2]}}</td>
+                % color = 'success' if x[3] == 0 else ''
+                <td class="text-end fw-bold text-{{color}}">{{x[3]}}</td>
+              </tr>
+              % end
+            </tbody>
+            <tfoot></tfoot>
+          </table>
+
+
+        </div>
+
+      </div>
+
+
+
+
+
+
+
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  tasa = localStorage.getItem('tasa') !== null ? localStorage.getItem('tasa') : 0;
+  document.querySelector("input[name='tasa']").value = tasa;
+</script>
+
+
+% include('footer.html')

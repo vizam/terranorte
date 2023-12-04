@@ -1,15 +1,10 @@
 % include('esqueleto.html')
 % include('navbar.html')
 
-
-
-
-
 <div class="container">
     <div class="row">
         <div class="col-sm-3">
             % include('sidebar.html')
-            
         </div>
 
         <div class="col-sm-9">
@@ -31,8 +26,6 @@
                             <th>Propietario</th>
                             <th>Correo</th>
                             <th>Tlf</th>
-                            <th class="">Cuotas</th>
-                            <th class="">Saldo</th>
                             <th class="">Acciones</th>
 
                         </tr>
@@ -45,14 +38,11 @@
                             <td>{{x[2]}}</td>
                             <td>{{x[3]}}</td>
                             <td>{{x[4]}}</td>
-                            <td>{{x[5]}}/{{x[6]}}/{{x[7]}}/{{x[8]}}</td>
-                            <td>{{x[9]}}</td>
-                            <td>
-                                <i class="material-icons text-warning" style="cursor: pointer;" title="Editar"
+                            <td class="text-center">
+                                <span class="material-icons text-warning" style="cursor: pointer;" title="Editar"
                                     data-edificio="{{x[0]}}" data-apartamento="{{x[1]}}" data-propietario="{{x[2]}}"
-                                    data-correo="{{x[3]}}" data-telefono="{{x[4]}}" data-cuota_comun="{{x[5]}}"
-                                    data-cuota_edificio="{{x[6]}}" data-cuota_agua="{{x[7]}}" data-cuota_otro="{{x[8]}}"
-                                    onclick="editarPropietario(event)">edit</i>
+                                    data-correo="{{x[3]}}" data-telefono="{{x[4]}}"
+                                    onclick="editarPropietario(event)">edit</span>
                             </td>
                         </tr>
                         % end

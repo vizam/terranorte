@@ -1,4 +1,6 @@
-import sqlite3, csv
+import sqlite3
+import csv
+
 
 def crear_db():
     con = sqlite3.connect("terranorte.db")
@@ -9,25 +11,11 @@ def crear_db():
                         propietario     TEXT,
                         correo          TEXT,
                         telefono        TEXT,
-                        cuota_comun     INTEGER NOT NULL DEFAULT 0,
-                        cuota_edificio  INTEGER NOT NULL DEFAULT 0,
-                        cuota_agua      INTEGER NOT NULL DEFAULT 0,
-                        cuota_otro      INTEGER NOT NULL DEFAULT 0,
-                        saldo           INTEGER NOT NULL DEFAULT 0,
                         CHECK   (   edificio IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11 ,12, 13, 14, 15, 16) 
                                     AND 
                                     apartamento IN ('pba', 'pbb', 'pbc', '1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c')
                                 ),        
                         PRIMARY KEY (edificio ,apartamento))''')
-    cur.execute('''CREATE TABLE IF NOT EXISTS pagos (
-                        edificio        INTEGER,
-                        apartamento     TEXT,        
-                        fecha           TEXT NOT NULL,
-                        referencia      TEXT,
-                        pago_bs         REAL DEFAULT 0.00,
-                        pago_usd        REAL DEFAULT 0.00,
-                        pago_total      REAL NOT NULL,
-                        procesado       INTEGER DEFAULT 0)''')
     cur.execute('''CREATE TABLE IF NOT EXISTS recibos (
                         edificio        INTEGER NOT NULL,
                         apartamento     TEXT NOT NULL,
@@ -35,66 +23,52 @@ def crear_db():
                         concepto        TEXT,        
                         cuota_comun     INTEGER NOT NULL,
                         cuota_edificio  INTEGER NOT NULL,
-                        cuota_agua      INTEGER NOT NULL,
-                        cuota_otro      INTEGER NOT NULL,
-                        procesado       INTEGER DEFAULT 0,
+                        saldo           INTEGER NOT NULL,
                         CHECK   (   edificio IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11 ,12, 13, 14, 15, 16) 
                                     AND 
-                                    apartamento IN ('pba', 'pbb', 'pbc', '1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c')
-                                ))''')
-    cur.execute('''CREATE TABLE IF NOT EXISTS fondos (
-                        comun                   REAL NOT NULL DEFAULT 0.00,
-                        edificio_1              REAL NOT NULL DEFAULT 0.00,
-                        edificio_2              REAL NOT NULL DEFAULT 0.00,
-                        edificio_3              REAL NOT NULL DEFAULT 0.00,
-                        edificio_4              REAL NOT NULL DEFAULT 0.00,
-                        edificio_5              REAL NOT NULL DEFAULT 0.00,
-                        edificio_6              REAL NOT NULL DEFAULT 0.00,
-                        edificio_7              REAL NOT NULL DEFAULT 0.00,
-                        edificio_8              REAL NOT NULL DEFAULT 0.00,
-                        edificio_9              REAL NOT NULL DEFAULT 0.00,
-                        edificio_10             REAL NOT NULL DEFAULT 0.00,
-                        edificio_11             REAL NOT NULL DEFAULT 0.00,
-                        edificio_12             REAL NOT NULL DEFAULT 0.00,
-                        edificio_13             REAL NOT NULL DEFAULT 0.00,
-                        edificio_14             REAL NOT NULL DEFAULT 0.00,
-                        edificio_15             REAL NOT NULL DEFAULT 0.00,
-                        edificio_16             REAL NOT NULL DEFAULT 0.00,
-                        agua_1                  REAL NOT NULL DEFAULT 0.00,
-                        agua_2                  REAL NOT NULL DEFAULT 0.00,
-                        agua_3                  REAL NOT NULL DEFAULT 0.00,
-                        agua_4                  REAL NOT NULL DEFAULT 0.00,
-                        agua_5                  REAL NOT NULL DEFAULT 0.00,
-                        agua_6                  REAL NOT NULL DEFAULT 0.00,
-                        agua_7                  REAL NOT NULL DEFAULT 0.00,
-                        agua_8                  REAL NOT NULL DEFAULT 0.00,
-                        agua_9                  REAL NOT NULL DEFAULT 0.00,
-                        agua_10                 REAL NOT NULL DEFAULT 0.00,
-                        agua_11                 REAL NOT NULL DEFAULT 0.00,
-                        agua_12                 REAL NOT NULL DEFAULT 0.00,
-                        agua_13                 REAL NOT NULL DEFAULT 0.00,
-                        agua_14                 REAL NOT NULL DEFAULT 0.00,
-                        agua_15                 REAL NOT NULL DEFAULT 0.00,
-                        agua_16                 REAL NOT NULL DEFAULT 0.00,
-                        otro_1                  REAL NOT NULL DEFAULT 0.00,
-                        otro_2                  REAL NOT NULL DEFAULT 0.00,
-                        otro_3                  REAL NOT NULL DEFAULT 0.00,
-                        otro_4                  REAL NOT NULL DEFAULT 0.00,
-                        otro_5                  REAL NOT NULL DEFAULT 0.00,
-                        otro_6                  REAL NOT NULL DEFAULT 0.00,
-                        otro_7                  REAL NOT NULL DEFAULT 0.00,
-                        otro_8                  REAL NOT NULL DEFAULT 0.00,
-                        otro_9                  REAL NOT NULL DEFAULT 0.00,
-                        otro_10                 REAL NOT NULL DEFAULT 0.00,
-                        otro_11                 REAL NOT NULL DEFAULT 0.00,
-                        otro_12                 REAL NOT NULL DEFAULT 0.00,
-                        otro_13                 REAL NOT NULL DEFAULT 0.00,
-                        otro_14                 REAL NOT NULL DEFAULT 0.00,
-                        otro_15                 REAL NOT NULL DEFAULT 0.00,
-                        otro_16                 REAL NOT NULL DEFAULT 0.00)''')
+                                    apartamento IN ('pba', 'pbb', 'pbc', '1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c') ) )''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS pagos (
+                        edificio        INTEGER,
+                        apartamento     TEXT,        
+                        fecha           TEXT NOT NULL,
+                        referencia      TEXT,
+                        pago_bs         REAL NOT NULL DEFAULT 0.00,
+                        pago_usd        INTEGER NOT NULL DEFAULT 0,
+                        saldo           INTEGER NOT NULL,
+                        procesado       INTEGER NOT NULL DEFAULT 0   )''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS gastos (
+                        fecha           TEXT NOT NULL,
+                        concepto        TEXT NOT NULL,
+                        referencia      TEXT,
+                        gasto_bs        REAL DEFAULT 0.00,
+                        gasto_usd       INTEGER DEFAULT 0,
+                        fondo           TEXT NOT NULL,
+                        procesado       INTEGER DEFAULT 0,
+                        CHECK ( fondo   IN ('comun',    
+                                            'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8', 'e9', 'e10', 'e11', 'e12', 'e13', 'e14', 'e15', 'e16' ))) ''')
+    
+    cur.execute('''CREATE TABLE IF NOT EXISTS fondos  (
+                        comun           INTEGER NOT NULL DEFAULT 0,
+                        e1              INTEGER NOT NULL DEFAULT 0,
+                        e2              INTEGER NOT NULL DEFAULT 0,
+                        e3              INTEGER NOT NULL DEFAULT 0,
+                        e4              INTEGER NOT NULL DEFAULT 0,
+                        e5              INTEGER NOT NULL DEFAULT 0,
+                        e6              INTEGER NOT NULL DEFAULT 0,
+                        e7              INTEGER NOT NULL DEFAULT 0,
+                        e8              INTEGER NOT NULL DEFAULT 0,
+                        e9              INTEGER NOT NULL DEFAULT 0,
+                        e10             INTEGER NOT NULL DEFAULT 0,
+                        e11             INTEGER NOT NULL DEFAULT 0,
+                        e12             INTEGER NOT NULL DEFAULT 0,
+                        e13             INTEGER NOT NULL DEFAULT 0,
+                        e14             INTEGER NOT NULL DEFAULT 0,
+                        e15             INTEGER NOT NULL DEFAULT 0,
+                        e16             INTEGER NOT NULL DEFAULT 0)''')
     con.commit()
     cur.close()
     con.close()
+
 
 def cargar_unidades():
     con = sqlite3.connect("terranorte.db")
@@ -105,16 +79,12 @@ def cargar_unidades():
                                                     apartamento,
                                                     propietario,
                                                     correo,
-                                                    telefono,
-                                                    cuota_comun,
-                                                    cuota_edificio,
-                                                    cuota_agua,
-                                                    cuota_otro,
-                                                    saldo     )
-                            VALUES (?,?,?,?,?,?,?,?,?,?)''', reader)
+                                                    telefono    )
+                            VALUES (?,?,?,?,?)''', reader)
     con.commit()
     cur.close()
     con.close()
+
 
 def cargar_recibos():
     con = sqlite3.connect("terranorte.db")
@@ -127,15 +97,13 @@ def cargar_recibos():
                                                     concepto,
                                                     cuota_comun,
                                                     cuota_edificio,
-                                                    cuota_agua,
-                                                    cuota_otro  )
-                            VALUES (?,?,?,?,?,?,?,?)''', reader)
+                                                    saldo         )
+                            VALUES (?,?,?,?,?,?,?)''', reader)
     con.commit()
     cur.close()
     con.close()
 
 
-# crear_db()
-# cargar_unidades()
+crear_db()
+cargar_unidades()
 cargar_recibos()
-

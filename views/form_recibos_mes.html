@@ -1,6 +1,6 @@
 <div class="container">
 
-    <fieldset class="border p-2">
+    <fieldset class="">
         <form class="" action="/recibos/almacenar/mes" method="POST">
             <legend>Generar Recibos del Mes</legend>
             <div class="row">
@@ -12,7 +12,7 @@
                 </div>
                 <div class="col">
                     <div class="form-floating mt-3">
-                        <input class="form-control text-primary" type="textarea" id="concepto" name="concepto">
+                        <input class="form-control text-primary" type="textarea" id="concepto" name="concepto" placeholder="Concepto">
                         <label for="concepto">Concepto:</label>
                     </div>
                 </div>
@@ -21,29 +21,15 @@
                 <div class="col">
                     <div class="form-floating mt-3">
                         <input class="form-control text-primary" type="number" id="cuota_comun" name="cuota_comun"
-                            min="0" value="20" required>
+                            min="0" placeholder="Cuota comun" required>
                         <label for="cuota_comun">Cuota Comun:</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating mt-3">
                         <input class="form-control text-primary" type="number" id="cuota_edificio" name="cuota_edificio"
-                            min="0" value="0" required>
+                            min="0" value="0" placeholder="Cuota del edificio" required>
                         <label for="cuota_edificio">Cuota del Edificio:</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating mt-3">
-                        <input class="form-control text-primary" type="number" id="cuota_agua" name="cuota_agua" min="0"
-                            value="0" required>
-                        <label for="cuota_agua">Cuota por Agua:</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating mt-3">
-                        <input class="form-control text-primary" type="number" id="cuota_otro" name="cuota_otro" min="0"
-                            value="0" required>
-                        <label for="cuota_otro">Cuota (Otros):</label>
                     </div>
                 </div>
             </div>
