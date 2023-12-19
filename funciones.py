@@ -1,10 +1,9 @@
+
 import sqlite3
 import re
 
 
-def unidades_todos():
-    # tabla unidades: edificio, apartamento, propietario, correo, telefono,
-    #                cuota_comun, cuota_edificio, cuota_agua, cuota_otro, saldo
+def unidades():
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
     cur.execute('''SELECT * FROM unidades''')
@@ -18,27 +17,32 @@ def ultimos_agregados(tabla: str) -> [(), ()]:
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
     cur.execute(f'''SELECT  rowid, * FROM {tabla}
-                ORDER BY rowid DESC LIMIT 30''')
-    # if no record, return []
+                ORDER BY rowid DESC LIMIT 200''')
     resultado = cur.fetchall()
     cur.close()
     con.close()
     return resultado
 
-
-def fecha_periodo(tabla: str) -> [(), ()]:
-    pass
-
-
-def fechas_todas(tabla: str) -> [(), ()]:
+def no_procesados(tabla: str) -> [(), ()]:
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
-    cur.execute(f''' SELECT DISTINCT fecha FROM {tabla} ORDER BY fecha''')
+    cur.execute(f'''SELECT  rowid, * FROM {tabla} WHERE procesado=0
+                ORDER BY fecha ''')
+    resultado = cur.fetchall()
+    cur.close()
+    con.close()
+    return resultado
+
+def fechas_disponibles(tabla: str) -> [(), ()]:
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute(f''' SELECT fecha FROM {tabla} ORDER BY fecha''')
     fechas = cur.fetchall()
+    fechas = list(set([x[0][:7] for x in fechas])) # cut long dates or keep the original
+    fechas.sort()
     cur.close()
     con.close()
     return fechas
-
 
 def parse_propietario(propietario: str) -> [str, str, str]:
     edificio = re.findall('[0-9]+', propietario)[0]
@@ -61,16 +65,16 @@ def propietario_editar(post):
     return 'OK'
 
 def procesar_recibo(datos):
-# datos --> bottle Forms.Dictionary
     '''
     FORM:                               TABLE:
     edificio            edificio        NOT NULL
     apartamento         apartamento     NOT NULL
     fecha               fecha           NOT NULL
-    concepto            concepto
+    concepto            concepto        TEXT
     cuota_comun         cuota_comun     INTEGER NOT NULL
     cuota_edificio      cuota_edificio  INTEGER  NOT NULL
                         saldo           INTEGER NOT NULL
+                        procesado       INTEGER NOT NULL DEFAULT 0
     '''
     cuota_comun = int(datos['cuota_comun'])
     cuota_edificio = int(datos['cuota_edificio'])
@@ -86,17 +90,17 @@ def procesar_recibo(datos):
                                                 cuota_edificio,
                                                 saldo  )
                         VALUES (?,?,?,?,?,?,?)''', (  int(datos['edificio']),
-                                                    datos['apartamento'],
-                                                    datos['fecha'], # input type month
+                                                    datos['apartamento'].lower(),
+                                                    datos['fecha'], 
                                                     datos['concepto'],
                                                     cuota_comun,
                                                     cuota_edificio,
                                                     saldo   ))
-        con.commit()
     except Exception as err:
         print(err)
         return 'Error'
     else:
+        con.commit()
         return 'Ok'
     finally:
         cur.close()
@@ -113,16 +117,16 @@ def procesar_recibos_mes(datos):
     cuota_edificio                      concepto      
                                         cuota_comun     INTEGER NOT 
                                         cuota_edificio  INTEGER NOT 
-                                        saldo           INTEGER DEFAULT 0
+                                        pago_saldo           INTEGER DEFAULT 0
     '''
     cuota_comun = int(datos['cuota_comun'])
     cuota_edificio = int(datos['cuota_edificio'])
-    saldo = cuota_comun + cuota_edificio
+    pago_saldo = cuota_comun + cuota_edificio
     campos_comunes = (  datos['mes'],
                         datos['concepto'],
                         cuota_comun,
                         cuota_edificio,
-                        saldo       )
+                        pago_saldo       )
     valores = []
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
@@ -138,43 +142,25 @@ def procesar_recibos_mes(datos):
                                                 concepto,
                                                 cuota_comun,
                                                 cuota_edificio,
-                                                saldo)
+                                                pago_saldo)
                     VALUES (?,?,?,?,?,?,?)''', valores)
         con.commit()
     except Exception as err:
         print(err)
         return 'Error'
     else:
-        return ("Ok", datos['mes'])
+        return ("Ok")
     finally:
         cur.close()
         con.close()
 
-
-def eliminar_recibo(numero):
+def consultar_pagos(edificio: int = 0, apartamento: str = "", fecha: str = "") -> [(), ()]:
     con = sqlite3.connect("terranorte.db")
-    cur = con.cursor()
-    try:
-        cur.execute(f'''DELETE FROM recibos WHERE rowid = {numero}''')
-        con.commit()
-    except Exception as err:
-        print(err)
-        return 'Error'
-    else:
-        return 'OK'
-    finally:
-        cur.close()
-        con.close()
-
-def consultar_pagos(edificio: int = 0, apartamento: str = '', fecha: str = '') -> [(), ()]:
+    cur = con.cursor() 
     if edificio and apartamento:
-        con = sqlite3.connect("terranorte.db")
-        cur = con.cursor()
         sql = f'''SELECT rowid, * FROM pagos WHERE edificio = {
             edificio} AND apartamento = '{apartamento}' '''
     if fecha:
-        con = sqlite3.connect("terranorte.db")
-        cur = con.cursor()
         sql = f'''SELECT rowid, * FROM pagos WHERE fecha LIKE '{fecha}%' '''
     cur.execute(sql)
     resultado = cur.fetchall()
@@ -186,82 +172,106 @@ def procesar_pago(datos):
     # datos --> bottle Forms.Dictionary
     '''
     FORM:                               TABLE:
-    edificio                            edificio    
-    apartamento                         apartamento 
+    edificio                            edificio    INTEGER
+    apartamento                         apartamento TEXT
     fecha                               fecha       NOT NULL
     referencia                          referencia  TEXT
-    monto                               pago_bs     REAL DEFAULT 0.0
-                                        pago_usd    INTEGER DEFAULT 0
-                                        saldo       INTEGER INTEGER NOT NULL
+    monto                               pago_bs     REAL NOT NULL DEFAULT 0.0
+                                        pago_usd    INTEGER NOT NULL
+                                        saldo       INTEGER NOT NULL
                                         procesado   INTEGER NOT NULL DEFAULT 0
-     moneda  (radio) ?   bolivares       
+    moneda  (radio) ?   bolivares       
                         dolares  
     tasa    (hidden)
     '''
-    pago_bs = float(datos['monto'] if datos['moneda'] == 'bolivar' else 0.0)
-    pago_usd = int(datos['monto'] if datos['moneda'] == 'dolar' else 0)
-    # saldo need calculation 
-    ordenes_sql = '''   INSERT INTO pagos ( edificio,
-                                            apartamento,
-                                            fecha,
-                                            referencia,
-                                            pago_bs,
-                                            pago_usd,
-                                            saldo       )
-                        VALUES (?,?,?,?,?,?,?)        '''
-    if datos.get('moneda') == 'bolivar':
-        saldo = int(float(pago_bs) / float(datos['tasa']))
-    else:
-        saldo = int(pago_usd)
-    # None will throw sqlite error NOT NULL constrain for fecha
-    # Some values could be Null, meaning non identified
-    tuple_datos = ( datos.get('edificio') or None,
-                    datos.get('apartamento') or None, 
-                    datos.get('fecha') or None, 
-                    datos.get('referencia') or None, 
-                    round(pago_bs, 2),
+    match datos.get('moneda'):
+        case 'bolivar':
+            pago_bs = float(datos.get('monto'))
+            pago_usd = saldo = round(pago_bs / float(datos.get('tasa')))
+        case 'dolar':
+            pago_bs = 0.0
+            pago_usd = saldo = int(datos.get('monto'))
+    valores = (     datos.get('edificio'),              
+                    datos.get('apartamento').lower(), 
+                    datos.get('fecha'), 
+                    datos.get('referencia'), 
+                    pago_bs,
                     pago_usd,
                     saldo   )
-    return (ordenes_sql, tuple_datos)
-
-def aplicar_pagos(pago_id: int) -> [str,]:
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
-    cur.execute(f''' SELECT rowid, * FROM pagos
+    try:
+        cur.execute('''   INSERT INTO pagos ( edificio,
+                                                apartamento,
+                                                fecha,
+                                                referencia,
+                                                pago_bs,
+                                                pago_usd,
+                                                saldo       )
+                            VALUES (?,?,?,?,?,?,?)  ''', valores)
+    except Exception as err:
+        print(err)
+        return 'Error'
+    else:
+        con.commit()
+    finally:
+        cur.close()
+        con.close()
+    return 'Ok'
+
+def aplicar_pago(pago_id: int) -> [str,] or []:
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute(f''' SELECT edificio, apartamento, saldo FROM pagos
                     WHERE rowid={pago_id} ''')
-    pago = cur.fetchone() # (...)
-    edificio = pago[1]
-    apartamento = pago[2]
-    pago_saldo = pago[7]
+    pago = cur.fetchone() # (...) or None
+    edificio = pago[0]
+    apartamento = pago[1]
+    pago_saldo = pago[2]
     recibos_lista = [] # [(saldo, rowid), (...)]
-    cur.execute(f''' SELECT rowid, * FROM recibos
+    cur.execute(f''' SELECT rowid, saldo FROM recibos
                     WHERE edificio={edificio} AND apartamento='{apartamento}' AND saldo > 0 ''')
     recibos = cur.fetchall() # [(...)...]
-    if recibos and pago_saldo:
+    if recibos and pago_saldo:  # recibos con saldo > 0, pago con saldo > 0
         for recibo in recibos: # (...)
-            if pago_saldo > recibo[7]:
-                pago_saldo = pago_saldo - recibo[7]
+            recibo_saldo = recibo[1]
+            if pago_saldo > recibo_saldo:
                 recibos_lista.append((0, recibo[0])) # (saldo, rowid) order matters for UPDATE placeholders
-            elif recibo[7] > pago_saldo:
-                recibos_lista.append((recibo[7] - pago_saldo, recibo[0]))
+                pago_saldo = pago_saldo - recibo_saldo
+            elif pago_saldo < recibo_saldo:
+                recibos_lista.append((recibo_saldo - pago_saldo, recibo[0]))
                 pago_saldo = 0
                 break
             else:
-                pago_saldo = 0
                 recibos_lista.append((0, recibo[0]))
+                pago_saldo = 0
                 break
-        cur.execute(f'''UPDATE pagos SET    saldo={pago_saldo},
-                                            procesado=1
+        cur.execute(f'''UPDATE pagos SET saldo={pago_saldo}, procesado=1
                         WHERE rowid={pago_id} ''')
-        cur.executemany(''' UPDATE recibos SET saldo=?
-                            WHERE rowid=?''', recibos_lista)
-        con.commit()    
-        ret = [str(x[1]) for x in recibos_lista]  
-        if len(ret) % 2 != 0: ret.append(0) 
-        cur.close()
-        con.close()
-        return ret
-    return []
+        cur.executemany(''' UPDATE recibos SET saldo=?, procesado=1 WHERE rowid=?''', recibos_lista)
+        ## preparing data for fondos
+        recibos_alfondo = [recibo[1] for recibo in recibos_lista if recibo[0] == 0] # [(saldo, rowid)] ->  [rowid, *]
+        if len(recibos_alfondo) == 1 : recibos_alfondo.append(0) # IN clause require tuple without final comma
+        recibos_alfondo = tuple(recibos_alfondo) # (1,2,...)
+        cur.execute(f'''SELECT edificio, cuota_comun, cuota_edificio FROM recibos WHERE rowid IN {recibos_alfondo}''')
+        recibos_alfondo = cur.fetchall() # shadowing previous variable
+        for recibo in recibos_alfondo:
+            recibo_edificio = recibo[0]
+            cuota_comun = recibo[1]
+            cuota_edificio = recibo[2]
+            cur.execute(f'''SELECT comun, e{recibo_edificio} FROM fondos''')
+            fondos = cur.fetchone() # could be None, recibos_alfondo could have 0 as last record
+            fondo_comun = fondos[0]
+            fondo_edificio = fondos[1]
+            fondo_comun += cuota_comun
+            fondo_edificio += cuota_edificio
+            cur.execute(f'''UPDATE fondos SET comun={fondo_comun}, e{recibo_edificio}={fondo_edificio} ''')
+        con.commit()
+    ret = [str(x[1]) for x in recibos_lista]  
+    if len(ret) == 1 : ret.append(0) # IN clause wont work with a single element tuple
+    cur.close()
+    con.close()
+    return ret
 
 def almacenar_gasto(post: object) -> str:
     #         Form                             Tabla
@@ -276,19 +286,33 @@ def almacenar_gasto(post: object) -> str:
     cur = con.cursor()
     match post.get('moneda'):
         case 'bolivar':
-            gasto_bs, gasto_usd = post.get('monto'), 0
+            gasto_bs, gasto_usd = float(post.get('monto')), round(float(post.get('monto')) / float(post.get('tasa')))
         case 'dolar':
-            gasto_usd, gasto_bs = post.get('monto'), 0.00
-    cur.execute(f'''INSERT   INTO gastos (fecha, concepto, referencia, gasto_bs, gasto_usd, fondo)
-                             VALUES (   '{post.get('fecha')}',
-                                        '{post.get('concepto')}',
-                                        '{post.get('referencia')}',
-                                        {float(gasto_bs)},{int(gasto_usd)},
-                                        '{post.get('fondo')}' ) ''' )
-    con.commit()
-    cur.close()
-    con.close()
-    return 'Ok'
+            gasto_usd, gasto_bs = int(post.get('monto')), 0.00
+        case _:
+            gasto_bs = 0.0
+            gasto_usd = 0
+    try:
+        cur.execute(f'''INSERT   INTO gastos (fecha, concepto, referencia, gasto_bs, gasto_usd, fondo)
+                                VALUES (   '{post.get('fecha')}',
+                                            '{post.get('concepto')}',
+                                            '{post.get('referencia')}',
+                                            {gasto_bs},
+                                            {gasto_usd},
+                                            '{post.get('fondo')}' ) ''' )
+        cur.execute(f'''SELECT {post.get('fondo')} FROM fondos''')
+        fondo_monto = cur.fetchone()[0] # -> (fondo,)
+        fondo_monto -= gasto_usd
+        cur.execute(f"""UPDATE fondos SET {post.get('fondo')}={fondo_monto} """)
+    except Exception as err:
+        print(err)
+        return 'Error'
+    else:
+        con.commit()
+        return 'Ok'
+    finally:
+        cur.close()
+        con.close()
 
 
 def deuda_general():

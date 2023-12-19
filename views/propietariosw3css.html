@@ -1,20 +1,18 @@
 % include('esqueleto.html')
 % include('navbar.html')
 
-<div class="container">
-    % if mensajes:
-    hola
-    % end
-    <div class="row gx-0">
-        <div class="col-sm-3 bg-primary-subtle px-2">
+<div class="w3-content" style="max-width:1200px">
+    <div class="w3-row">
+        <div class="w3-quarter w3-padding w3-theme-l3">
             % include('sidebar.html')
         </div>
-        <div class="col-sm-9 px-2">
-            <h3>Listado</h3>
+
+        <div class="w3-rest  w3-padding ">
+            <!-- <h3>Listado</h3> -->
             % include('form_propietario.html')
             <hr>
-            <div class="overflow-y-auto mt-2 table-responsive border card" style="height: 50vh;">
-                <table class="table table-striped">
+            <div class="" style="height: 50vh;">
+                <table class="w3-table">
                     <thead class="table-primary">
                         <tr class="sticky-top">
                             <th class="">Ed.</th>
@@ -29,7 +27,7 @@
                         % for x in propietarios:
                         <tr>
                             <td class="fw-semibold">{{x[0]}}</td>
-                            <td class="fw-semibold">{{x[1]}}</td>
+                            <td class="fw-semibold">{{x[1].upper()}}</td>
                             <td>{{x[2]}}</td>
                             <td>{{x[3]}}</td>
                             <td>{{x[4]}}</td>

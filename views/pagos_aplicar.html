@@ -1,38 +1,39 @@
 % include('esqueleto.html')
 % include('navbar.html')
-
-
 <div class="container">
-  <div class="row">
-    <div class="col-sm-3">
+  <div class="row gx-0">
+    <div class="col-sm-3 bg-primary-subtle px-2">
       % include('sidebar.html')
     </div>
-
-    <div class="col-sm-9">
-      <h3>Pagos con saldo</h3>
-      <div class="h-50 overflow-y-auto table-responsive border mt-2 mb-2">
-        <table class="table table-striped">
-          <thead>
-            <tr class="text-center">
+    <div class="col-sm-9 px-2">
+      
+      <h3>Aplicar Pagos</h3>
+      <h5>Pagos con saldo</h5>
+      <div class="overflow-y-auto table-responsive card" style="height: 40vh ;">
+        <table class="table table-striped overflow-y-auto">
+          <thead class="table-primary">
+            <tr class="sticky-top">
               <th>#</th>
               <th>Edif</th>
               <th>Apto</th>
               <th>Fecha</th>
-              <th>Saldo</th>
-              <th>Acciones</th>
+              <th class="text-end">Pago USD$</th>
+              <th class="text-end">Saldo USD$</th>
+              <th class="text-center p-0"><span class="material-icons">build</span></th>
             </tr>
           </thead>
           <tbody>
             <!--rowid, edificio, apartamento, fecha, saldo -->
             % for x in pagos_con_saldo:
-            <tr class="text-center">
+            <tr class="">
               <td>{{x[0]}}</td>
-              <td>{{x[1]}}</td>
-              <td>{{x[2]}}</td>
+              <td class="fw-semibold">{{x[1]}}</td>
+              <td class="fw-semibold">{{x[2]}}</td>
               <td>{{x[3]}}</td>
-              <td>{{x[4]}}</td>
-              <td>
-                <a href="/pagos/aplicar/{{x[0]}}">
+              <td class="text-end fw-semibold">{{x[4]}}</td>
+              <td class="text-end fw-semibold text-success">{{x[5]}}</td>
+              <td class="text-center">
+                <a href="/pagos/aplicar/{{x[0]}}" title="Aplicar pago">
                   <span class="material-icons text-primary" id="icon_aplicar">
                     attach_money
                   </span>
@@ -46,58 +47,64 @@
         </table>
       </div>
 
+      <hr>
+
       <div class="row">
         <div class="col">
-
-          <table class="table table-primary">
-            <thead class="">
-              <tr>
-                <th>#</th>
-                <th>Fecha</th>
-                <th class="text-end">Saldo USD$</th>
-              </tr>
-            </thead>
-            <tbody>
-              % if pago_aplicado:
-              <tr>
-                <td>{{pago_aplicado[0]}}</td>
-                <td>{{pago_aplicado[1]}}</td>
-                % color = 'danger' if pago_aplicado[2] == 0 else ''
-                <td class="text-end fw-bold text-{{color}}">{{pago_aplicado[2]}}</td>
-              </tr>
-              % end
-            </tbody>
-            <tfoot>
-            </tfoot>
-          </table>
+          <h5>Pago aplicado</h5>
+          <div class="">
+            <table class="table table-striped">
+              <thead class="table-primary">
+                <tr>
+                  <th>#</th>
+                  <th>Fecha</th>
+                  <th class="text-end">Pago USD$</th>
+                  <th class="text-end">Saldo USD$</th>
+                </tr>
+              </thead>
+              <tbody>
+                % if pago:
+                <tr>
+                  <td>{{pago[0]}}</td>
+                  <td>{{pago[1]}}</td>
+                  <td class="text-end fw-semibold">{{pago[2]}}</td>
+                  % color = 'danger' if pago[3] == 0 else 'success'
+                  <td class="text-end fw-semibold text-{{color}}">{{pago[3]}}</td>
+                </tr>
+                % end
+              </tbody>
+              <tfoot>
+              </tfoot>
+            </table>
+          </div>
         </div>
         <div class="col">
-          <table class="table table-success">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Fecha</th>
-                <th>Concepto</th>
-                <th class="text-end">Saldo USD$</th>
-              </tr>
-            </thead>
-            <tbody>
-              % for x in recibos_aplicados:
-              <tr>
-                <td>{{x[0]}}</td>
-                <td>{{x[1]}}</td>
-                <td>{{x[2]}}</td>
-                % color = 'success' if x[3] == 0 else ''
-                <td class="text-end fw-bold text-{{color}}">{{x[3]}}</td>
-              </tr>
-              % end
-            </tbody>
-            <tfoot></tfoot>
-          </table>
-
-
+          <h5>Recibos procesados</h5>
+          <div class="">
+            <table class="table table-striped">
+              <thead class="table-success">
+                <tr>
+                  <th>#</th>
+                  <th>Fecha</th>
+                  <th>Concepto</th>
+                  <th class="text-end">Saldo USD$</th>
+                </tr>
+              </thead>
+              <tbody>
+                % for x in recibos:
+                <tr>
+                  <td>{{x[0]}}</td>
+                  <td>{{x[1]}}</td>
+                  <td>{{x[2]}}</td>
+                  % color = 'success' if x[3] == 0 else ''
+                  <td class="text-end fw-bold text-{{color}}">{{x[3]}}</td>
+                </tr>
+                % end
+              </tbody>
+              <tfoot></tfoot>
+            </table>
+          </div>
         </div>
-
       </div>
 
 

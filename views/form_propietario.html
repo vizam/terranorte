@@ -1,38 +1,18 @@
-<div class="container">
-    <fieldset disabled>
-        <legend>Editar Propietario</legend>
-        <form class="" id='editar_propietario' action="#" method="POST">
-            <div class="row">
-                <div class="col">
-                    <div class="form-floating mt-3">
-                        <input class="form-control text-muted" type="number" id="edificio" name="edificio"
-                            placeholder="Edif" readonly>
-                        <label for="edificio">Edificio:</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating mt-3">
-                        <input class="form-control text-muted" type="text" id="apartamento" name="apartamento"
-                            placeholder="Apto" readonly>
-                        <label for="apartamento">Apartamento:</label>
-                    </div>
-                </div>
+<fieldset disabled>
+    <legend>Editar Propietario</legend>
+    <form class="" id='editar_propietario' action="#" method="POST">
+        <div class="row">
+            <div class="col">
+                <input class="form-control" type="number" id="edificio" name="edificio" placeholder="Edificio" readonly>
             </div>
-            <div class="form-floating mb-3 mt-3">
-                <input class="form-control text-primary" type="text" id="propietario" name="propietario" placeholder="Propietario">
-                <label for="propietario">Propietario</label>
+            <div class="col">
+                <input class="form-control" type="text" id="apartamento" name="apartamento" placeholder="Apartamento"
+                    readonly>
             </div>
-            <div class="form-floating mb mt-3">
-                <input class="form-control text-primary" type="email" id="correo" name="correo" placeholder="Correo">
-                <label for="correo">Correo:</label>
-            </div>
-            <div class="form-floating mb mt-3">
-                <input class="form-control text-primary" type="tel" id="telefono" name="telefono" placeholder="Telefono">
-                <label for="telefono">Telefono:</label>
-            </div>
-            <div class="mt-3">
-                <button class="btn btn-warning w-100" type="submit" value="Editar">Editar</button>
-            </div>
-        </form>
-    </fieldset>
-</div>
+        </div>
+        <input class="form-control my-3" type="text" id="propietario" name="propietario" placeholder="Propietario">
+        <input class="form-control my-3" type="email" id="correo" name="correo" placeholder="Correo">
+        <input class="form-control my-3" type="tel" id="telefono" name="telefono" placeholder="Telefono">
+        <button class="btn btn-primary" type="submit" value="Editar">Editar</button>
+    </form>
+</fieldset>

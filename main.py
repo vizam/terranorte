@@ -1,10 +1,12 @@
 import sqlite3
 import re
 from bottle import template, route, request, run, redirect, static_file
-from funciones import procesar_recibo, procesar_recibos_mes, eliminar_recibo, \
-    procesar_pago, unidades_todos, propietario_editar, \
-    ultimos_agregados, fechas_todas, fecha_periodo, parse_propietario, \
-    consultar_pagos, almacenar_gasto, aplicar_pagos
+from bottle_flash2 import FlashPlugin
+from funciones import procesar_recibo, procesar_recibos_mes, \
+    procesar_pago, unidades, propietario_editar, \
+    ultimos_agregados, fechas_disponibles, parse_propietario, \
+    consultar_pagos, almacenar_gasto, aplicar_pago, no_procesados
+
 
 
 @route('/', method='GET')
@@ -16,12 +18,17 @@ def entrada():
 def server_static(filename):
     return static_file(filename, root='./static/js')
 
+@route('/static/css/<filename>')
+def server_static(filename):
+    return static_file(filename, root='./static/css')
+
+
 
 @route('/propietarios', method='GET')
 @route('/propietarios/<operacion>', method='GET')
 def listado(operacion=''):
-    unidades = unidades_todos()
-    return template('propietarios.html', unidades=unidades, operacion=operacion)
+    propietarios = unidades()
+    return template('propietarios.html', propietarios=propietarios, operacion=operacion)
 
 
 @route('/propietarios/editar/<edificio>/<apartamento>', method='POST')
@@ -30,29 +37,17 @@ def actualizar_propietario(edificio='', apartamento=''):
     return redirect(f'/propietarios/{respuesta}')
 
 
-@route('/recibos/ingresar', method='GET')
-@route('/recibos/ingresar/<operacion>', method='GET')
+@route('/recibos/generar', method='GET')
+@route('/recibos/generar/<operacion>', method='GET')
 def recibos_ingresar(operacion=''):
     ultimos = ultimos_agregados('recibos')
-    return template('recibos_ingresar.html', ultimos=ultimos)
-
-# intended for single invoice
+    return template('recibos_generar.html', ultimos=ultimos)
 
 
-@route('/recibos/almacenar', method='POST')
+@route('/recibo/almacenar', method='POST')
 def recibo_individual():
-    # caller = request.headers.get('Referer') # type: ignore
     resultado = procesar_recibo(request.POST)
-    if resultado == 'Error':
-        redirect('/recibos/ingresar/Error')
-    else:
-        redirect('/recibos/ingresar/Ok')
-
-
-@route('/recibos/eliminar/<numero>', method='GET')
-def eliminar(numero):
-    resultado = eliminar_recibo(numero)
-    redirect(request.headers.get('Referer'))
+    redirect(f'/recibos/generar/{resultado}')
 
 
 @route('/recibos/consultar', method='GET')
@@ -60,38 +55,58 @@ def eliminar(numero):
 def recibos_editar_propietario(operacion=''):
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
-    propietarios = unidades_todos()  # for select input
-    fechas = fechas_todas('recibos')
-    monto = 0
-    tabla = []
-    edificio = apartamento = propietario = ''
-    if request.query_string:
-        if request.query.get('propietario'):
-            propietario = parse_propietario(request.query['propietario'])
-            edificio = int(propietario[0])
-            apartamento = propietario[1]
-            propietario = propietario[2]
-            cur.execute(f'''SELECT rowid, * FROM recibos
-                            WHERE edificio={edificio}
-                            AND apartamento='{apartamento}'
-                            AND saldo > 0 ''')
-            tabla = cur.fetchall()
-            cur.execute(f'''SELECT SUM(cuota_comun), SUM(cuota_edificio)
-                            FROM recibos
-                            WHERE edificio={edificio} AND apartamento = '{apartamento}' AND saldo > 0 ''')
-            # result is a list with one tuple of two elements, could be [(None, None)]
-            cuotas = cur.fetchall()
-            monto += (cuotas[0][0] or 0) + (cuotas[0][1] or 0)
-        elif request.query['ano_mes']:
-            cur.execute(f''' SELECT rowid, * FROM recibos
-                            WHERE fecha LIKE '{request.query['ano_mes']}%'
-                            AND saldo > 0 ''')
-            tabla = cur.fetchall()
+    propietarios = unidades()  # for select input
+    fechas = fechas_disponibles('recibos')  # for select input
+    monto = 0   # for owner debt in case select goes for 'propietario'
+    tabla = []  # empty for empty value
+    # getter yield value or None, no Exception
+    propietario = request.query.get('propietario') or ""
+    ano_mes = request.query.get('ano_mes') or ""
+    edificio = apartamento = ""
+    if propietario:
+        propietario = parse_propietario(request.query['propietario'])
+        edificio = int(propietario[0])
+        apartamento = propietario[1]
+        propietario = propietario[2]
+        cur.execute(f'''SELECT rowid, * FROM recibos
+                        WHERE edificio={edificio}
+                        AND apartamento='{apartamento}'
+                        AND saldo > 0 ''')
+        tabla = cur.fetchall()
+        cur.execute(f'''SELECT SUM(saldo) FROM recibos
+                        WHERE edificio={edificio} AND apartamento = '{apartamento}' AND saldo > 0 ''')
+        # result is a list with one tuple of one elements, could be [(None, )]
+        saldo = cur.fetchone()  # (saldo,)
+        print(saldo)
+        monto = saldo[0] if saldo else 0
+    elif ano_mes:
+        cur.execute(f''' SELECT rowid, * FROM recibos
+                        WHERE fecha LIKE '{request.query['ano_mes']}%'
+                        AND saldo > 0 ''')
+        tabla = cur.fetchall()
     cur.close()
     con.close()
     return template('recibos_consultar.html', edificio=edificio,
                     apartamento=apartamento, propietario=propietario, monto=monto,
-                    tabla=tabla, fechas=fechas, propietarios=propietarios)
+                    tabla=tabla, fechas=fechas, ano_mes=ano_mes, propietarios=propietarios)
+
+
+@route('/recibos/eliminar/<id_or_period>', method='GET')
+def eliminar(id_or_period):
+    if '-' not in id_or_period:
+        sql = f"DELETE FROM recibos WHERE rowid = {
+            id_or_period} AND procesado=0"
+    else:
+        sql = f"DELETE FROM recibos WHERE fecha LIKE '{
+            id_or_period}%' AND procesado=0"
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute(sql)
+    con.commit()
+    if '-' in id_or_period:  # identifies masive delete, is better redirect without query string, giving some malfunction
+        redirect(request.headers.get('Referer'))
+    else:
+        redirect(request.headers.get('Referer'))
 
 
 @route('/recibos/editar', method='POST')
@@ -107,99 +122,51 @@ def recibos_editar():
                                         cuota_comun = {cuota_comun},
                                         cuota_edificio = {cuota_edificio},
                                         saldo = {saldo}
-                    WHERE rowid = {datos['rowid']}  ''')
+                    WHERE rowid = {datos['rowid']}  and PROCESADO=0''')
     con.commit()
     cur.close()
     con.close()
     redirect(request.headers.get('Referer'))
-    # return redirect(f"/recibos/editar/Ok?propietario={datos.get('edificio')}-{datos.get('apartamento')}-{datos.get('propietario')}")
-
-
-@route('/recibos/mes', method='GET')
-@route('/recibos/mes/<operacion>', method='GET')
-def recibo_masivo(operacion=''):
-    recibos = []
-    ano_mes = ''
-    fechas = fechas_todas('recibos')
-    con = sqlite3.connect("terranorte.db")
-    cur = con.cursor()
-    if request.query_string:
-        ano_mes = request.query.get('ano_mes')
-        # edificio, apartamento, fecha, concepto, cuota_comun, cuota_edificio, saldo
-        cur.execute(f'''SELECT rowid, *
-                        FROM recibos
-                        WHERE fecha LIKE '{ano_mes}%'  ''')
-        recibos = cur.fetchall()
-        cur.close()
-        con.close()
-    return template('recibos_mes.html', recibos=recibos, fechas=fechas, operacion=operacion, ano_mes=ano_mes)
 
 
 @route('/recibos/almacenar/mes', method='POST')
 def almacenar_mes():
-    match procesar_recibos_mes(request.POST):
-        case ('Ok', periodo):
-            redirect(f"/recibos/mes/Ok?ano_mes={periodo}")
-        case 'Error':
-            redirect('/recibos/mes/Error')
+    resultado = procesar_recibos_mes(request.POST)
+    redirect(f"/recibos/generar/{resultado}")
 
 
-@route('/recibos/eliminar/mes/<ano_mes>', method='GET')
-def recibos_eliminar_mes(ano_mes=''):
-    con = sqlite3.connect("terranorte.db")
-    cur = con.cursor()
-    cur.execute(f''' DELETE FROM recibos WHERE fecha LIKE '{ano_mes}%' ''')
-    con.commit()
-    cur.close()
-    con.close()
-    return redirect('/recibos/mes/OK')
-
-
-# template to enter new pago
-@route('/pagos', method='GET')
-@route('/pagos/<operacion>', method='GET')
+@route('/pagos/ingresar', method='GET')
+@route('/pagos/ingresar/<operacion>', method='GET')
 def pago(operacion=''):
-    # Table: pagos....edificio, apartamento, fecha, referencia, pago_bs, pago_usd, saldo
     ultimos = ultimos_agregados('pagos')
-    return template('pagos.html', ultimos=ultimos, operacion=operacion)
-
-
-@route('/pagos/consultar', method="GET")
-def pagos():
-    fechas_disponibles = fechas_todas('pagos')
-    propietarios = unidades_todos()
-    if request.query_string:
-        if request.query.get('propietario'):
-            datos_propietario = parse_propietario(
-                request.query.get('propietario'))
-            # parse and extract data from 'edificio-apartamento-propietario' in select value
-            # return [edificio: str ,apartamento: str, nombre: str]
-            datos_tabla = consultar_pagos(
-                int(datos_propietario[0]), datos_propietario[1])
-        if request.query.get('ano_mes'):
-            # query LIKE 'yyyy-mm%'
-            datos_tabla = consultar_pagos(fecha=request.query.get('ano_mes'))
-        return template('pagos_consultar.html', propietarios=propietarios, fechas=fechas_disponibles, datos_tabla=datos_tabla)
-    return template('pagos_consultar.html', propietarios=propietarios, fechas=fechas_disponibles, datos_tabla='')
+    return template('pagos_ingresar.html', ultimos=ultimos, operacion=operacion)
 
 
 @route('/pagos/almacenar', method='POST')
 def registrar_pago():
     # argumentos (sql, tuple)
-    argumentos = procesar_pago(request.POST)
-    con = sqlite3.connect("terranorte.db")
-    cur = con.cursor()
-    try:
-        cur.execute(argumentos[0], argumentos[1])
-        con.commit()
-    except Exception as err:
-        print(err)
-        redirect('/pagos/Error')
-    else:
-        redirect('/pagos/Ok')
-    finally:
-        cur.close()
-        con.close()
+    resultado = procesar_pago(request.POST)
+    match resultado:
+        case 'Ok':
+            redirect('/pagos/ingresar/Ok')
+        case 'Error':
+            redirect('/pagos/ingresar/Error')
+
+
+@route('/pagos/consultar', method="GET")
+def pagos():
+    propietarios = unidades()
+    fechas = fechas_disponibles('pagos')
+    datos_tabla = ""
+    if request.query.get('propietario'):
+        datos_propietario = parse_propietario(request.query.get('propietario'))
+        # parse and extract data from 'edificio-apartamento-propietario' in select value
+        # return [edificio: str ,apartamento: str, nombre: str]
+        datos_tabla = consultar_pagos(
+            int(datos_propietario[0]), datos_propietario[1])
+    if request.query.get('ano_mes'):
+        datos_tabla = consultar_pagos(fecha=request.query.get('ano_mes'))
+    return template('pagos_consultar.html', propietarios=propietarios, fechas=fechas, datos_tabla=datos_tabla)
 
 
 @route('/pagos/eliminar/<rowid>', method='GET')
@@ -211,93 +178,219 @@ def eliminar_pago(rowid):
     con.commit()
     cur.close()
     con.close()
-    redirect('/pagos/Ok')
+    redirect(request.headers.get('Referer'))
+
+
+@route('/pago/identificar', method='POST')
+def identificar_pago():
+    post = request.POST
+    if post.get('rowid') and post.get('edificio') and post.get('apartamento'):
+        con = sqlite3.connect("terranorte.db")
+        cur = con.cursor()
+        cur.execute(f'''UPDATE pagos SET edificio={post.get('edificio')},
+                                        apartamento='{post.get('apartamento')}'
+                        WHERE rowid={post.get('rowid')}
+                        AND edificio='' and apartamento='' ''')
+        con.commit()
+        cur.close()
+        con.close()
+        redirect(request.headers.get("Referer"))
 
 
 @route('/pagos/aplicar', method='GET')
-def pagos_aplicar():
-    pagos_con_saldo = ""
-    pago_aplicado = request.query.get('pago') or ""
-    recibos_aplicados = request.query.get('recibos') or ""
+@route('/pagos/aplicar/<pago_id>', method='GET')
+def pagos_aplicar(pago_id=0):
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
-    cur.execute(f"""SELECT rowid, edificio, apartamento, fecha, saldo
-                    FROM pagos
-                    WHERE saldo > 0""")
-    pagos_con_saldo = cur.fetchall()
-    if pago_aplicado:
-        cur.execute(f''' SELECT rowid,fecha,saldo FROM pagos WHERE rowid={pago_aplicado} ''')
-        pago_aplicado = cur.fetchone()
-    if recibos_aplicados:
-        # IN clause require tuple
-        recibos_aplicados = tuple(recibos_aplicados.split(','))
-        cur.execute(
-            f'''SELECT rowid,fecha,concepto, saldo FROM recibos WHERE rowid IN {recibos_aplicados} ''')
-        recibos_aplicados = cur.fetchall()
-    cur.close()
-    con.close()
-    return template('pagos_aplicar.html', pagos_con_saldo=pagos_con_saldo, pago_aplicado=pago_aplicado, recibos_aplicados=recibos_aplicados)
-
-
-@route('/pagos/aplicar/<pago_id>', method='GET')
-def pagos_aplicar(pago_id=''):
+    pago = ""
     recibos = ""
     if pago_id:
-        recibos_procesados = aplicar_pagos(pago_id)  # [rowid,... ]
-        recibos = ','.join(recibos_procesados)
-        redirect(f"/pagos/aplicar?pago={pago_id}&recibos={recibos}")
-    redirect('/pagos/aplicar')
+        # (rowid,... ) or () # IN clause require parenthesis (tuple without final comma)
+        recibos_procesados = tuple(aplicar_pago(pago_id))
+        cur.execute(
+            f'''SELECT rowid,fecha, pago_usd, saldo 
+                FROM pagos WHERE rowid={pago_id} ''')
+        pago = cur.fetchone()
+        cur.execute(
+            f'''SELECT rowid,fecha, concepto, saldo 
+                FROM recibos WHERE rowid IN {recibos_procesados} ''')
+        recibos = cur.fetchall()
+    cur.execute(f"""SELECT rowid, edificio, apartamento, fecha, pago_usd, saldo
+                    FROM pagos
+                    WHERE saldo > 0 AND edificio != '' AND apartamento != '' """)
+    pagos_con_saldo = cur.fetchall()
+    cur.close()
+    con.close()
+    return template('pagos_aplicar.html', pagos_con_saldo=pagos_con_saldo, pago=pago, recibos=recibos)
 
 
-@route('/gastos', method='GET')
-@route('/gastos/<operacion>', method='GET')
+@route('/gastos/ingresar', method='GET')
+@route('/gastos/ingresar/<operacion>', method='GET')
 def definir_gastos(operacion=''):
-    fondos = ['comun', 'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7',
-              'e8', 'e9', 'e10', 'e11', 'e12', 'e13', 'e14', 'e15', 'e16']
-    ultimos = ultimos_agregados('gastos')
-    return template('gastos.html', fondos=fondos, operacion=operacion, ultimos=ultimos)
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute('''SELECT * FROM fondos''')
+    columnas = cur.description
+    montos = cur.fetchone()
+    cur.close()
+    con.close()
+    # [(columna, monto), ...]
+    fondos = [x for x in map(lambda x, y: (x[0], y), columnas, montos)]
+    gastos = no_procesados('gastos')
+    return template('gastos_ingresar.html', fondos=fondos, operacion=operacion, gastos=gastos)
 
 
 @route('/gastos/almacenar', method='POST')
 def gastos():
     resultado = almacenar_gasto(request.POST)
-    redirect(f'/gastos/{resultado}')
+    redirect(f'/gastos/ingresar/{resultado}')
+
+
+@route('/gastos/cerrar', method='GET')
+def cerrar_mes():
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute('''UPDATE gastos SET procesado=1 WHERE procesado=0''')
+    con.commit()
+    cur.close()
+    con.close()
+    redirect('/gastos/ingresar')
 
 
 @route('/gastos/eliminar/<rowid>', method='GET')
 def eliminar_gasto(rowid):
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
-    cur.execute('''DELETE FROM gastos WHERE rowid=? AND procesado=0''', rowid)
+    cur.execute(f'''SELECT gasto_usd, fondo FROM gastos WHERE rowid={
+                rowid} AND procesado=0''')
+    gasto = cur.fetchone()  # tuple of two if any, or None
+    gasto_usd = gasto[0]  # int
+    fondo = gasto[1]  # str
+    cur.execute(f'''SELECT {fondo} FROM fondos''')  # (int,)
+    fondo_monto = cur.fetchone()[0]  # int
+    fondo_monto += gasto_usd
+    cur.execute(f'''UPDATE fondos SET {fondo}={fondo_monto} ''')
+    cur.execute(f'''DELETE FROM gastos WHERE rowid={rowid} AND procesado=0''')
     con.commit()
     cur.close()
     con.close()
-    redirect('/gastos/Ok')
+    redirect('/gastos/ingresar')
 
 
-@route('/reportes/general', method='GET')
-def recibos(operacion=""):
+@route('/gastos/consultar')
+def consultar_gastos():
     con = sqlite3.connect("terranorte.db")
     cur = con.cursor()
-    cur.execute('''SELECT   SUM(cuota_comun),
-                            SUM(cuota_edificio),
-                            SUM(cuota_agua),
-                            SUM(cuota_otro)
-                    FROM recibos ''')
-    cuotas = cur.fetchall()
-    deuda = int((cuotas[0][0] or 0) + (cuotas[0][1] or 0) +
-                (cuotas[0][2] or 0) + (cuotas[0][3] or 0))
+    # cur.execute('''SELECT fecha FROM gastos''')
+    # fechas = cur.fetchall() # -> [(fecha,)...]
+    # fechas = set([x[0][:7] for x in fechas])
+    # print(fechas)
+    fechas = fechas_disponibles('gastos')
+    if request.query.get('ano_mes'):
+        ano_mes = request.query.get('ano_mes')
+        cur.execute(
+            f'''SELECT rowid,* FROM gastos WHERE procesado=1 AND fecha LIKE '{ano_mes}%' ''')
+        gastos = cur.fetchall()
+        print(gastos)
+    else:
+        gastos = ""
+    cur.close()
+    con.close()
+    return template('gastos_consultar.html', fechas=fechas, gastos=gastos)
+
+
+@route('/reporte/morosidad', method='GET')
+def morosidad(operacion=""):
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute(''' SELECT SUM(saldo)
+                    FROM recibos 
+                    WHERE saldo > 0''')
+    deuda = cur.fetchone()[0] or 0 # (suma,) can be (None,)
     cur.execute('''SELECT recibos.edificio, recibos.apartamento, unidades.propietario,
-                        COUNT(recibos.fecha),  SUM(recibos.cuota_comun), SUM(recibos.cuota_edificio),
-                        SUM(recibos.cuota_agua), SUM(recibos.cuota_otro)
+                        COUNT(recibos.fecha),  SUM(recibos.saldo)
                         FROM recibos
-                        INNER JOIN unidades ON recibos.edificio = unidades.edificio AND recibos.apartamento = unidades.apartamento
-                        WHERE recibos.procesado = 0
+                        INNER JOIN unidades 
+                        ON recibos.edificio = unidades.edificio AND recibos.apartamento = unidades.apartamento
+                        WHERE recibos.saldo > 0
                         GROUP BY recibos.edificio, recibos.apartamento ''')
     datos_tabla = cur.fetchall()
     cur.close()
     con.close()
-    return template('reportes_recibos.html', datos_tabla=datos_tabla, operacion=operacion, deuda=deuda)
+    return template('reporte_morosidad.html', datos_tabla=datos_tabla, operacion=operacion, deuda=deuda)
+
+
+@route('/reporte/balance/bsd', method='GET')
+@route('/reporte/balance/bsd/<resultado>', method='GET')
+def balance():
+    fechas = fechas_disponibles('gastos')
+    ano_mes = request.query.get('ano_mes')
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute(f'''SELECT fecha, edificio, apartamento, referencia, pago_bs
+                    FROM pagos
+                    WHERE pago_bs > 0.0 AND fecha LIKE '{ano_mes}%' ''')
+    pagos = cur.fetchall()
+    pagos_balance = [(x[0], str(x[1]) + '-' + x[2], x[3], 0.0, x[4])
+                     for x in pagos]
+    cur.execute(f'''SELECT SUM(pago_bs)
+                    FROM pagos
+                    WHERE pago_bs > 0.0 AND fecha LIKE '{ano_mes}%' ''')
+    creditos = cur.fetchone()[0] or 0 # (value,) value can be None
+    # print(pagos_balance)
+    cur.execute(f'''SELECT fecha, concepto, referencia, gasto_bs FROM gastos
+                    WHERE gasto_bs > 0.0 AND fecha LIKE '{ano_mes}%' ''')
+    gastos = cur.fetchall()
+    gastos_balance = [(x[0], x[1], x[2], x[3], 0.0) for x in gastos]
+    cur.execute(f'''SELECT SUM(gasto_bs)
+                    FROM gastos
+                    WHERE gasto_bs > 0.0 AND fecha LIKE '{ano_mes}%' ''')
+    debitos = cur.fetchone()[0] or 0
+    # print(gastos_balance)
+    cur.close()
+    con.close()
+    # 5 elements
+    balance = pagos_balance + gastos_balance
+    balance.sort()
+    # print(balance)
+    return template('reporte_balanceBsD.html', fechas=fechas, balance=balance, debitos=debitos, creditos=creditos)
+
+
+@route('/reporte/balance/usd', method='GET')
+@route('/reporte/balance/usd/<ano_mes>', method='GET')
+def balance(ano_mes=''):
+    fechas = fechas_disponibles('gastos')
+    ano_mes = request.query.get('ano_mes')
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute(f'''SELECT fecha, edificio, apartamento, referencia, pago_usd
+                    FROM pagos
+                    WHERE pago_bs = 0.0 AND fecha LIKE '{ano_mes}%' ''')
+    pagos = cur.fetchall()
+    pagos_balance = [(x[0], str(x[1]) + '-' + x[2], x[3], 0.0, x[4])
+                     for x in pagos]
+    # print(pagos_balance)
+    cur.execute(f'''SELECT SUM(pago_usd)
+                    FROM pagos
+                    WHERE pago_bs = 0 AND fecha LIKE '{ano_mes}%' ''')
+    creditos = cur.fetchone()[0] or 0 # (value,) value can be None
+    cur.execute(f'''SELECT fecha, concepto, referencia, gasto_usd
+                    FROM gastos
+                    WHERE gasto_bs = 0 AND fecha LIKE '{ano_mes}%' ''')
+    gastos = cur.fetchall()
+    gastos_balance = [(x[0], x[1], x[2], x[3], 0.0) for x in gastos]
+    # print(gastos_balance)
+    cur.execute(f'''SELECT SUM(gasto_usd)
+                    FROM gastos
+                    WHERE gasto_bs = 0 AND fecha LIKE '{ano_mes}%' ''')
+    debitos = cur.fetchone()[0] or 0
+    cur.close()
+    con.close()
+    # 5 elements
+    balance = pagos_balance + gastos_balance
+    balance.sort()
+    # print(balance)
+    return template('reporte_balanceUSD.html', fechas=fechas, balance=balance, debitos = debitos, creditos = creditos)
 
 
 run(host='localhost', port=8080, debug=True)  # , reloader=True)

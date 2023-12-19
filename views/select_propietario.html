@@ -1,25 +1,19 @@
-<div class="container mt-2 mb-2 pt-2 pb-2">
-    <fieldset class="">
-        <legend>Seleccionar Propietario</legend>
-        <form class="" action="{{accion}}" method="GET">
-            <div class="row">
-                <div class="col">
-                    <select class="form-select" id="propietarios" name="propietario">
-                        <!-- propietarios: 10 values without rowid -->
-                        % for x in propietarios:
-                        % valor = str(x[0]) + '-' + x[1] + '-' + x[2]
-                        <option value="{{valor}}">{{valor}}
-                        </option>
-                        % end
-                       
-                    </select>
-                </div>
-                <div class="col">
-                    <div class="container">
-                        <button class="btn btn-primary w-100" type="submit" value="Actualizar">Consultar Propietario</button>
-                    </div>
-                </div>
+    <fieldset class="select mt-2 mb-2">
+        <legend></legend>
+        <!-- <legend>Seleccionar Propietario</legend> -->
+        <form class="row" action="{{accion}}" method="GET">
+            <div class="col">
+                <select class="form-select" id="propietarios" name="propietario">
+                    % for x in propietarios:
+                    % valor = str(x[0]) + '-' + x[1] + '-' + x[2]
+                    <option value="{{valor}}">{{valor.upper()}}
+                    </option>
+                    % end
+
+                </select>
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" type="submit" value="Actualizar">Consultar Propietario</button>
             </div>
         </form>
     </fieldset>
-</div>

@@ -1,72 +1,95 @@
 % include('esqueleto.html')
 % include('navbar.html')
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-3">
+<div class="print container">
+    <div class="row gx-0">
+        <div class="col-sm-3 px-2 bg-primary-subtle">
             % include('sidebar.html')
-
         </div>
-
-        <div class="col-sm-9">
-            <div class="container">
-                <h1>Consultar Recibos</h1>
-            </div>
-
-            % include('select_propietario.html', accion = '/recibos/consultar')
+        <div class="col-sm-9 px-2">
+            <h3>Recibos con Saldo</h3>
             % include('select_fecha.html', accion = '/recibos/consultar')
+            % include('select_propietario.html', accion = '/recibos/consultar')
+            <hr>
             % include('form_recibo_editar.html')
-            <div class="container">
-                <div class="container">
-                    <h3 class="text-end">{{propietario}}</h3>
-                    <h4 class="text-end">Edificio: {{edificio}}, Apartamento: {{apartamento}}, Monto: USD$ {{monto}}
-                    </h4>
-                </div>
-                <table class="table-responsive table">
-                    <thead>
+            <hr>
+            % if propietario and edificio and apartamento and monto:
+            % display1 = "style=display:block;"
+            % else:
+            % display1 = "style=display:none;"
+            % end
+            <h5 {{display1}}>
+                Propietario: <span class="text-info">{{propietario}}</span> Edif: <span
+                    class="text-info">{{edificio}}</span> Apto: <span class="text-info">{{str(apartamento).upper()}}
+                </span> <span class="text-decoration-underline"> Deuda:</span> 
+                <span class="text-danger">{{monto}}</span> USD$
+
+            </h5>
+            % if ano_mes:
+            % display2 = "style=display:block;"
+            % else:
+            % display2 = "style=display:none;"
+            % end
+            <h5 {{display2}}><span class="fw-bold">Periodo: <span class="text-info">{{ano_mes}}</span></span>
+                <a href="/recibos/eliminar/{{ano_mes}}">
+                    <button class="btn btn-sm btn-outline-danger float-end" id="boton_periodo"
+                        onclick="deleteMesPrevent(event)">
+                        Eliminar recibos <span class="fw-bold">NO PROCESADOS</span> del
+                        <span class="fw-bold" id="span_periodo">{{ano_mes}}</span></button>
+                </a>
+            </h5>
+
+
+            <div class="print overflow-y-auto mt-3 border card" style="height: 40vh;">
+                <table class="print table table-striped">
+                    <thead class="sticky-top table-primary">
                         <tr>
-                            <th class="text-center">Recibo</th>
-                            <th class="text-center">Edificio</th>
-                            <th class="text-center">Apartamento</th>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Ed.</th>
+                            <th class="text-center">Apto.</th>
                             <th class="text-center">Fecha</th>
-                            <th class="text-center">Concepto</th>
-                            <th class="text-end">Cuotas</th>
+                            <th class="text-start">Concepto</th>
+                            <th class="text-end">USD$</th>
                             <th class="text-end">Saldo</th>
-                            <th class="text-center">Acciones</th>
+                            <th class="noprint text-center p-0"><span class="material-icons">build</span></th>
                         </tr>
                     </thead>
-                    % for x in tabla:
-                    <tr>
-                        <td class="text-center">{{x[0]}}</td>
-                        <td class="text-center">{{x[1]}}</td>
-                        <td class="text-center">{{x[2]}}</td>
-                        <td class="text-center">{{x[3]}}</td>
-                        <td>{{x[4]}}</td>
-                        <td class="text-end">{{x[5]}}/{{x[6]}}</td>
-                        <td class="text-end">{{x[7]}}</td>
-                        <td class="text-center">
-                            <span class="material-icons text-warning" style="cursor:pointer;" title="Editar Recibo"
-                                onclick="editarRecibo(event)" data-rowid="{{x[0]}}" data-edificio="{{x[1]}}"
-                                data-apartamento="{{x[2]}}" data-fecha="{{x[3]}}" data-concepto="{{x[4]}}"
-                                data-cuota_comun="{{x[5]}}" data-cuota_edificio="{{x[6]}}">edit</span>
-                            <a href="/recibos/eliminar/{{x[0]}}">
-                                <span class="material-icons text-danger" style="cursor:pointer;"
-                                    onclick="deletePrevent(event)" title="Elimiinar Recibo">backspace</span>
-                            </a>
-                        </td>
-                    </tr>
-
-
-
-                    % end
+                    <tbody class="table-hover">
+                        % for x in tabla:
+                        <tr>
+                            <td class="text-center">{{x[0]}}</td>
+                            <td class="text-center fw-semibold">{{x[1]}}</td>
+                            <td class="text-center fw-semibold">{{x[2]}}</em></td>
+                            <td class="text-center">{{x[3]}}</td>
+                            <td class=""><em>{{x[4]}}</em></td>
+                            <td class="text-end fw-bold">{{x[5] + x[6]}}</td>
+                            <td class="text-end fw-bold text-danger">{{x[7]}}</td>
+                            <!-- Edit tools only available for procesados=0 (saldo original)-->
+                            <td class="noprint text-center">
+                                % if x[8] == 0:
+                                <span class="material-icons text-primary" style="cursor:pointer;" title="Editar Recibo"
+                                    onclick="editarRecibo(event)" data-rowid="{{x[0]}}" data-edificio="{{x[1]}}"
+                                    data-apartamento="{{x[2]}}" data-fecha="{{x[3]}}" data-concepto="{{x[4]}}"
+                                    data-cuota_comun="{{x[5]}}" data-cuota_edificio="{{x[6]}}">edit</span>
+                                <a href="/recibos/eliminar/{{x[0]}}">
+                                    <span class="material-icons text-danger" style="cursor:pointer;"
+                                        onclick="deletePrevent(event)" title="Elimiinar Recibo">backspace</span>
+                                </a>
+                            </td>
+                            %end
+                        </tr>
+                        % end
+                    </tbody>
                 </table>
             </div>
-
-
-
-
         </div>
     </div>
 </div>
 
-<script src="/static/js/myscript.js"></script>
+<script>
+
+    if (document.getElementById('span_periodo').innerHTML == '') {
+        document.getElementById('boton_periodo').setAttribute('disabled', true);
+    }
+
+</script>

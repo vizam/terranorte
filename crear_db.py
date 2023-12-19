@@ -24,6 +24,7 @@ def crear_db():
                         cuota_comun     INTEGER NOT NULL,
                         cuota_edificio  INTEGER NOT NULL,
                         saldo           INTEGER NOT NULL,
+                        procesado       INTEGER NOT NULL DEFAULT 0
                         CHECK   (   edificio IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11 ,12, 13, 14, 15, 16) 
                                     AND 
                                     apartamento IN ('pba', 'pbb', 'pbc', '1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c') ) )''')
@@ -33,7 +34,7 @@ def crear_db():
                         fecha           TEXT NOT NULL,
                         referencia      TEXT,
                         pago_bs         REAL NOT NULL DEFAULT 0.00,
-                        pago_usd        INTEGER NOT NULL DEFAULT 0,
+                        pago_usd        INTEGER NOT NULL,
                         saldo           INTEGER NOT NULL,
                         procesado       INTEGER NOT NULL DEFAULT 0   )''')
     cur.execute('''CREATE TABLE IF NOT EXISTS gastos (
@@ -97,8 +98,18 @@ def cargar_recibos():
                                                     concepto,
                                                     cuota_comun,
                                                     cuota_edificio,
-                                                    saldo         )
-                            VALUES (?,?,?,?,?,?,?)''', reader)
+                                                    saldo,
+                                                    procesado         )
+                            VALUES (?,?,?,?,?,?,?,?)''', reader)
+    con.commit()
+    cur.close()
+    con.close()
+
+def iniciar_fondos():
+    con = sqlite3.connect("terranorte.db")
+    cur = con.cursor()
+    cur.execute(''' INSERT INTO fondos 
+                    VALUES (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)''')
     con.commit()
     cur.close()
     con.close()
@@ -107,3 +118,4 @@ def cargar_recibos():
 crear_db()
 cargar_unidades()
 cargar_recibos()
+iniciar_fondos()

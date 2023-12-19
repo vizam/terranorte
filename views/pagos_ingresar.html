@@ -3,49 +3,39 @@
 
 
 <div class="container">
-  <div class="row">
-    <div class="col-sm-3">
+  <div class="row gx-0">
+    <div class="col-sm-3 bg-primary-subtle px-2">
       % include('sidebar.html')
     </div>
-
-    <div class="col-sm-9">
-
-      <div class="container">
-        <h1>Ingresar: </h1>
-
-      </div>
-
+    <div class="col-sm-9 px-2">
 
       % include('form_pagos.html')
-
-
-      <div class="table-responsive">
-        <table class="table">
-
-          <div class="container">
-            <h1>Ultimos agregados</h1>
-            <p>Resultado de la operacion: {{operacion}}</p>
-          </div>
-          <thead>
+      <hr>
+      % include('form_pago_identificar.html')
+      <hr>
+      <h4>Ultimos agregados</h4>
+      <div class="table-responsive overflow-y-auto mt-3 card" style="height: 25rem;">
+        <table class="table table-striped">
+          <thead class="sticky-top table-primary">
             <tr class="text-center">
               <th>#</th>
-              <th>Edificio</th>
-              <th>Apartamento</th>
-              <th>Fecha</th>
-              <th class="text-end">Referencia</th>
+              <th class="text-start">Ed.</th>
+              <th class="text-start">Apto.</th>
+              <th class="text-start">Fecha</th>
+              <th class="text-start">Referencia</th>
               <th class="text-end">BsD</th>
               <th class="text-end">$USD</th>
-              <th class="text-end">Saldo $USD</th>
-              <th>Acciones</th>
+              <th class="text-end">Saldo $</th>
+              <th class="text-center p-0"><span class="material-icons">build</span></th>
             </tr>
           </thead>
           % for x in ultimos:
           <tr>
             <td class="text-center">{{x[0]}}</td>
-            <td class="text-center">{{x[1]}}</td>
-            <td class="text-center">{{x[2]}}</td>
-            <td class="text-center">{{x[3]}}</td>
-            <td class="text-end">{{x[4]}}</td>
+            <td class="fw-semibold">{{x[1]}}</td>
+            <td class="fw-semibold">{{x[2]}}</td>
+            <td class="">{{x[3]}}</td>
+            <td class="">{{x[4]}}</td>
             <td class="text-end">{{x[5]}}</td>
             <td class="text-end">{{(x[6])}}</td>
             <td class="text-end">{{(x[7])}}</td>
@@ -58,13 +48,7 @@
                 </span>
               </a>
               % end
-              % if x[7] > 0:
-              <a class="text-success" style="text-decoration: none;" href="/pagos/aplicar/{{x[0]}}" title="Aplicar">
-                <span class="material-icons">
-                  paid
-                </span>
-              </a>
-              % end
+
             </td>
           </tr>
           % end

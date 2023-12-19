@@ -59,6 +59,11 @@ function deleteMesPrevent(evt) {
     }
 }
 
+function cerrarMesPrevent(evt) {
+    if ( ! window.confirm("Desea cerrar los gastos del mes ?") ) {
+        evt.preventDefault()
+    }
+}
 
 // function editarRecibo(evt) {
 

@@ -1,30 +1,35 @@
 % include('esqueleto.html')
 % include('navbar.html')
-
 <div class="container">
-    <div class="row">
-        <div class="col-sm-3">
+    <div class="row gx-0">
+        <div class="col-sm-3 bg-primary-subtle px-2">
             % include('sidebar.html')
         </div>
-        <div class="col-sm-9">
-            <div class="container">
-                <h1>Ingresar Recibo</h1>
+        <div class="col-sm-9 px-2">
+            <h3>Generar Recibos</h3>
+            <div class="row">
+                <div class="col">
+                    % include('form_recibo.html')
+                </div>
+                <div class="col">
+                    % include('form_recibos_mes.html')
+                </div>
             </div>
-            % include('form_recibo.html', accion = '/recibos/almacenar')
+            <hr>
 
-            <div class="container">
-                <table class="table table-responsive caption-top">
-                    <caption style="font-weight: bold;">Ultimos Ingresados</caption>
-                    <thead>
+            <h4>Ultimos agregados:</h4>
+            <div class="table-responsive overflow-y-auto mt-3 border card" style="height: 40vh;">
+                <table class="table table-striped">
+                    <thead class="sticky-top table-primary">
                         <tr>
                             <th class="text-center">#</th>
-                            <th class="text-center">Edificio</th>
-                            <th class="text-center">Apartamento</th>
+                            <th class="text-center">Ed.</th>
+                            <th class="text-center">Apto.</th>
                             <th class="text-center">Fecha</th>
                             <th>Concepto</th>
-                            <th>Cuotas</th>
-                            <th>Saldo</th>
-                            <th class="text-center">Acciones</th>
+                            <th class="text-center">Monto</th>
+                            <th class="text-center">Saldo</th>
+                            <th class="text-center p-0"><span class="material-icons">build</span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,18 +38,21 @@
                         % for recibo in ultimos:
                         <tr>
                             <td class="text-center">{{recibo[0]}}</td>
-                            <td class="text-center">{{recibo[1]}}</td>
-                            <td class="text-center">{{recibo[2]}}</td>
+                            <td class="text-center fw-semibold">{{recibo[1]}}</td>
+                            <td class="text-center fw-semibold">{{recibo[2]}}</td>
                             <td class="text-center">{{recibo[3]}}</td>
                             <td>{{recibo[4]}}</td>
-                            <td>{{recibo[5]}}/{{recibo[6]}}</td>
-                            <td>{{recibo[7]}}</td>
+                            <td class="text-center">{{recibo[5] + recibo[6]}}</td>
+                            <td class="text-center">{{recibo[7]}}</td>
+                            <!--no procesado-->
                             <td class="text-center">
+                                % if recibo[8] == 0:
                                 <a href="/recibos/eliminar/{{recibo[0]}}">
                                     <span class="material-icons text-danger" onclick="deletePrevent(event)"
                                         style="cursor:pointer;" title="Elimiinar Recibo">backspace</span>
                                 </a>
                             </td>
+                            % end
                         </tr>
                         % end
 
@@ -59,9 +67,11 @@
                 </table>
 
 
+
             </div>
 
         </div>
+        
     </div>
+    
 </div>
-

@@ -1,0 +1,50 @@
+% include('esqueleto.html')
+% include('navbar.html')
+<div class="container">
+    <div class="row gx-0">
+        <div class="col-sm-3 bg-primary-subtle px-2">
+            % include('sidebar.html')
+        </div>
+        <div class="col-sm-9 px-2">
+            <h4>Balance en USD</h4>
+            % include('select_fecha.html', accion="/reporte/balance/usd")
+            <hr>
+            % color = 'success' if creditos - debitos >= 0 else 'danger'
+            <h5>Debitos: <span class="text-info text-danger">{{debitos}}</span> / Creditos: <span
+                    class="text-success">{{creditos}}</span> / Balance: <span class="text-{{color}}">{{creditos-debitos}} USD</span>
+            </h5>
+            <div class="table-responsive overflow-y-auto mt-3 card" style="height: 70vh;">
+                <table class="table">
+                    <thead class="sticky-top table-primary">
+                        <tr class="">
+                            <th>Fecha</th>
+                            <th class="">Gasto / Propietario</th>
+                            <th class="">Ref</th>
+                            <th class="text-end">Debito</th>
+                            <th class="text-end">Credito</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- fecha, concepto/propietario, ref, debito, credito -->
+                        % for x in balance:
+                        % color = "danger" if x[3] > 0 else "success"
+                        <tr class="">
+                            <td class="">{{x[0]}}</td>
+                            <td class="text-uppercase fw-semibold">{{x[1]}}</td>
+                            <td class="">{{x[2]}}</td>
+                            <td class="text-end fw-bold text-{{color}}">{{x[3]}}</td>
+                            <td class="text-end fw-bold text-{{color}}">{{x[4]}}</td>
+                        </tr>
+                        % end
+                    </tbody>
+                    <tfoot>
+
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+% include('footer.html')
