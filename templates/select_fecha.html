@@ -1,0 +1,15 @@
+<fieldset class="select mt-2 mb-2">
+    <legend></legend>
+    <form class="row" action="{{accion}}" method="GET">
+        <div class="col">
+            <select class="form-select" id="ano_mes" name="ano_mes">
+                {% for fecha in fechas %}
+                <option value="{{fecha}}">{{fecha}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" type="submit" value="Consultar">Consultar Periodo</button>
+        </div>
+    </form>
+</fieldset>

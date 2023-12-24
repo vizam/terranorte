@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block main %}
+<h3>Aplicar Pagos</h3>
+<h5>Pagos con saldo</h5>
+<div class="overflow-y-auto table-responsive" style="height: 40vh ;">
+  <table class="table table-striped overflow-y-auto">
+    <thead class="table-primary">
+      <tr class="sticky-top">
+        <th>#</th>
+        <th>Edif</th>
+        <th>Apto</th>
+        <th>Fecha</th>
+        <th class="text-end">Pago Bs</th>
+        <th class="text-end">Pago USD$</th>
+        <th class="text-end">Saldo USD$</th>
+        <th class="text-center p-0"><span class="material-icons">build</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!--rowid, edificio, apartamento, fecha, saldo -->
+      {% for x in pagos_con_saldo %}
+      <tr class="">
+        <td>{{x[0]}}</td>
+        <td class="fw-semibold">{{x[1]}}</td>
+        <td class="fw-semibold">{{x[2]}}</td>
+        <td>{{x[3]}}</td>
+        <td class="text-end">{{x[4]}}</td>
+        <td class="text-end fw-semibold">{{x[5]}}</td>
+        <td class="text-end fw-semibold text-success">{{x[6]}}</td>
+        <td class="text-center">
+          <!-- <a href="/pagos/aplicar/{{x[0]}}" title="Aplicar pago"> -->
+          <a href="{{url_for('pagos_aplicar', pago_id=x[0])}}" title="Aplicar pago">
+            <span class="material-icons text-primary" id="icon_aplicar">
+              attach_money
+            </span>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+    </tfoot>
+  </table>
+</div>
+
+<hr>
+
+<div class="row">
+  <div class="col">
+    <h5>Pago aplicado</h5>
+    <div class="">
+      <table class="table table-striped">
+        <thead class="table-primary">
+          <tr>
+            <th>#</th>
+            <th>Fecha</th>
+            <th class="text-end">Pago USD$</th>
+            <th class="text-end">Saldo USD$</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if pago_aplicado: %}
+          <tr>
+            <td>{{pago_aplicado[0]}}</td>
+            <td>{{pago_aplicado[1]}}</td>
+            <td class="text-end fw-semibold">{{pago_aplicado[2]}}</td>
+            {% set color = 'danger' if pago_aplicado[3] == 0 else 'success' %}
+            <td class="text-end fw-semibold text-{{color}}">{{pago_aplicado[3]}}</td>
+          </tr>
+          {% endif %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+  <div class="col">
+    <h5>Recibos procesados</h5>
+    <div class="">
+      <table class="table table-striped">
+        <thead class="table-success">
+          <tr>
+            <th>#</th>
+            <th>Fecha</th>
+            <th>Concepto</th>
+            <th class="text-end">Saldo USD$</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for x in recibos_procesados: %}
+          <tr>
+            <td>{{x[0]}}</td>
+            <td>{{x[1]}}</td>
+            <td>{{x[2]}}</td>
+            {% set color = 'success' if x[3] == 0 else 'danger' %}
+            <td class="text-end fw-bold text-{{color}}">{{x[3]}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock main %}

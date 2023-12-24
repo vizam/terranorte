@@ -1,0 +1,14 @@
+<fieldset id="field_identificar" disabled>
+    <legend>Identificar Pago</legend>
+    <form class="" action="{{url_for('pago_identificar')}}" method="POST" id="form_identificar">
+        <div class="hstack gap-3">
+            <input class="form-control" type="numer" min="1" max="16" id="rowid" name="rowid" placeholder="#" readonly
+                required>
+            <input class="form-control" type="number" id="edificio" name="edificio" min="1" max="16"
+                placeholder="Edificio" required>
+            <input class="form-control" type="text" id="apartamento" name="apartamento" placeholder="Apartamento"
+                required>
+            <button class="btn btn-primary" type="submit" form="form_identificar">Identificar</button>
+        </div>
+    </form>
+</fieldset>

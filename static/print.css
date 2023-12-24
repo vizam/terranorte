@@ -1,0 +1,53 @@
+@page {
+    size: letter;
+    margin: 2cm 2cm;
+}
+
+
+@media print {
+
+
+    fieldset,
+    select,
+    hr {
+        display: none;
+    }
+
+    .col-sm-9 {
+        width: 100% !important;
+
+    }
+
+    .container {
+        display: contents;
+    }
+
+    .print {
+        height: 100% !important;
+        overflow: hidden !important; 
+
+    }
+
+    .noprint {
+        display: none;
+    }
+
+    div {
+        box-shadow: 0;
+    }
+    
+    table {
+        width: 100% !important;
+        height: 100% !important;
+        border: none;
+    }
+
+    th,
+    tr,
+    td {
+        padding: none !important;
+        border: none !important;
+    }
+
+
+}

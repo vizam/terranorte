@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block main %}
+<h3>Gastos procesados (cerrados)</h3>
+{% set accion = url_for('gastos_consultar') %}
+{% include 'select_fecha.html' %}
+<hr>
+<h5>Gastos procesados:</h5>
+<div class="table-responsive overflow-y-auto" style="height: 70vh;">
+    <table class="table table-striped">
+        <thead class="sticky-top table-primary">
+            <tr class="text-center">
+                <th class="text-start">#</th>
+                <th class="text-start">Fecha</th>
+                <th class="text-start">Concepto</th>
+                <th class="text-end">Ref</th>
+                <th class="text-end">BsD</th>
+                <th class="text-end">USD $</th>
+                <th>Fondo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in gastos: %}
+            <tr>
+                <td class="">{{x[0]}}</td>
+                <td class="">{{x[1]}}</td>
+                <td class="fw-semibold">{{x[2]}}</td>
+                <td class="text-end">{{x[3]}}</td>
+                <td class="text-end">{{x[4]}}</td>
+                <td class="text-end">{{x[5]}}</td>
+                <td class="text-center text-uppercase">{{x[6]}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</div>
+{% endblock main %}

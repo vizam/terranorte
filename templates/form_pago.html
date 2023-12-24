@@ -1,0 +1,61 @@
+<fieldset>
+    <legend>Ingresar Pago</legend>
+    <form class="" action="{{url_for('pago_almacenar')}}" method="POST">
+        <div class="row">
+            <div class="col">
+                <div class="form-floating">
+                    <input class="form-control text-primary" type="number" id="edificio" name="edificio" min="1"
+                        max="16" placeholder="Edificio" autofocus>
+                    <label for="edificio">Edificio:</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating">
+                    <input class="form-control text-primary" type="text" id="apartamento" name="apartamento"
+                        placeholder="Apartamento">
+                    <label for="apartamento">Apartamento:</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating">
+                    <input class="form-control text-primary" type="date" id="fecha" name="fecha" placeholder="Fecha"
+                        required>
+                    <label for="fecha">Fecha</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mt-3">
+                    <input class="form-control text-primary" type="text" id="referencia" name="referencia"
+                        placeholder="solo para Bs">
+                    <label for="referencia">Referencia:</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mt-3">
+                    <input class="form-control text-primary" type="number" min="1" step="0.01" id="monto" name="monto"
+                        placeholder="Monto" required>
+                    <label for="monto">Monto:</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-check mt-3">
+                    <input type="radio" class="form-check-input" id="bolivar" name="moneda" value="bolivar" required>Bs
+                    <label class="form-check-label" for="bolivar" required></label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" id="dolar" name="moneda" value="dolar" required>USD$
+                    <label class="form-check-label" for="dolar"></label>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="tasa" name="tasa" required>
+        <button class="btn btn-primary mt-3" type="submit">Guardar</button>
+    </form>
+</fieldset>
+<script>
+    tasa = localStorage.getItem('tasa') !== null ? localStorage.getItem('tasa') : 0;
+    document.querySelector("input[id='tasa']").value = tasa;
+</script>

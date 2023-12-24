@@ -1,0 +1,18 @@
+<div class="nav flex-column fs-5">
+    <h5>Propietarios</h5>
+    <a href="{{ url_for('listado') }}" class="nav-link">Listado</a>
+    <h5>Recibos</h5>
+    <a href="{{url_for('recibos_generar')}}" class="nav-link">Generar</a>
+    <a href="{{url_for('recibos_consultar')}}" class="nav-link">Consultar</a>
+    <h5>Pagos</h5>
+    <a href="{{url_for('pago_ingresar')}}" class="nav-link">Ingresar</a>
+    <a href="{{url_for('pagos_consultar')}}" class="nav-link">Consultar</a>
+    <a href="{{url_for('pagos_aplicar')}}" class="nav-link">Aplicar</a>
+    <h5>Gastos</h5>
+    <a href="{{url_for('gastos_ingresar')}}" class="nav-link">Ingresar</a>
+    <a href="{{url_for('gastos_consultar')}}" class="nav-link">Consultar</a>
+    <h5>Reportes</h5>
+    <a href="{{url_for('balance_bs')}}" class="nav-link">Balance Bs</a>
+    <a href="{{url_for('balance_usd')}}" class="nav-link">Balance USD$</a>
+    <a href="{{url_for('morosidad')}}" class="nav-link">Morosidad</a>
+  </div>

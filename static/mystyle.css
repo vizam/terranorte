@@ -1,0 +1,34 @@
+.box-msg {
+    width: 20vw;
+    position: fixed;
+    bottom: 10vh;
+    left: -25vw;
+    animation-name: box-in, box-out;
+    animation-delay: 0s, 5s;
+    animation-duration: 1s, 1s;
+    animation-fill-mode:forwards ;
+}
+
+@keyframes box-in {
+    from {
+        bottom: 10vh;
+        left: -20vh;
+    }
+
+    to {
+        bottom: 10vh;
+        left: 40vw
+    }
+}
+
+@keyframes box-out {
+    from {
+       bottom: 10vh;
+       left: 40vw;
+    }
+
+    to {
+        bottom: 10vh;
+        left: 100vw;
+    }
+}

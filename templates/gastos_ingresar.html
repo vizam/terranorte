@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block main %}
+{% include('form_gastos.html') %}
+<hr>
+<div class="hstack gap-3">
+    <div class="fs-5">Gastos del mes</div>
+    <div class="ms-auto">
+        <a href="{{url_for('gastos_cerrar')}}"><button type="button" class="btn btn-sm btn-outline-danger"
+                onclick="cerrarMesPrevent(event)">Cerrar el mes</button>
+        </a>
+    </div>
+</div>
+<div class="table-responsive overflow-y-auto mt-2" style="height: 50vh;">
+    <table class="table table-hover">
+        <thead class="sticky-top table-primary">
+            <tr class="text-center">
+                <th class="text-start">#</th>
+                <th class="text-start">Fecha</th>
+                <th class="text-start">Concepto</th>
+                <th class="text-start">Ref</th>
+                <th class="text-end">BsD</th>
+                <th class="text-end">USD $</th>
+                <th>Fondo</th>
+                <th class="text-center p-0"><span class="material-icons">build</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in gastos: %}
+            <tr>
+                <td class="">{{x[0]}}</td>
+                <td class="">{{x[1]}}</td>
+                <td class="fw-semibold">{{x[2]}}</td>
+                <td class="">{{x[3]}}</td>
+                <td class="text-end">{{x[4]}}</td>
+                <td class="text-end">{{x[5]}}</td>
+                <td class="text-center">{{x[6].capitalize()}}</td>
+                <td class="text-center"><a class="text-danger" href="{{url_for('gasto_eliminar', rowid=x[0])}}"
+                        title="Eliminar" onclick="deletePrevent(event)"><span class="material-icons">
+                            backspace
+                        </span></a>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+
+        </tfoot>
+    </table>
+
+</div>
+
+{% endblock main %}

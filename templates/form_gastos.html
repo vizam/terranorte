@@ -1,7 +1,7 @@
 <div class="container mb-3">
     <fieldset>
         <legend>Ingresar Gastos</legend>
-        <form class="" action="/gastos/almacenar" method="POST">
+        <form class="" action="{{url_for('gastos_almacenar')}}" method="POST">
             <div class="row">
                 <div class="col">
                     <div class="form-floating mt-3">
@@ -48,9 +48,9 @@
                 <div class="col">
                     <div class="form-floating mt-3">
                         <select class="form-select" id="fondo" name="fondo">
-                            % for x in fondos:
+                            {% for x in fondos: %}
                             <option value="{{x[0]}}">{{x[0].upper()}} = {{x[1]}}</option>
-                            % end
+                            {% endfor %}
                         </select>
                         <label for="fondo">Fondo</label>
                     </div>
@@ -64,3 +64,7 @@
         </form>
     </fieldset>
 </div>
+<script>
+    tasa = localStorage.getItem('tasa') !== null ? localStorage.getItem('tasa') : 0;
+    document.querySelector("input[id='tasa']").value = tasa;
+</script>

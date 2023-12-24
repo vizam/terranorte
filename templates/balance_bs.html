@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block main %}
+<h4>Balance en Bolivares. Periodo: <span class="text-info">{{ano_mes}}</span></h4>
+{% set accion = url_for('balance_bs') %}
+{% include 'select_fecha.html' %}
+<hr>
+<!-- TABS navs -->
+<ul class="nav nav-tabs noprint" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="ingresos-tab" data-bs-toggle="tab" data-bs-target="#ingresos-tab-pane"
+            type="button" role="tab" aria-controls="ingresos-tab-pane" aria-selected="true">Ingresos</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="gastos-tab" data-bs-toggle="tab" data-bs-target="#gastos-tab-pane" type="button"
+            role="tab" aria-controls="gastos-tab-pane" aria-selected="false">Gastos</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="balance-tab" data-bs-toggle="tab" data-bs-target="#balance-tab-pane" type="button"
+            role="tab" aria-controls="balance-tab-pane" aria-selected="false">Balance</button>
+    </li>
+</ul>
+
+<!-- TABS content -->
+<div class="tab-content" id="myTabContent">
+    <!-- TAB 1 -->
+    <div class="tab-pane fade show active" id="ingresos-tab-pane" role="tabpanel" aria-labelledby="ingresos-tab"
+        tabindex="0">
+        <div class="hstack gap-3 fs-5">
+            <div class="">Ingresos: </div>
+            <div class="text-info">{{creditos}} Bs</div>
+            <div class="material-icons text-primary" style="cursor: pointer;" onclick="window.print()">printer</div>
+        </div>
+        <div class="table-responsive overflow-y-auto print" style="height: 70vh;">
+            <table class="table table-hover">
+                <thead class="sticky-top table-primary">
+                    <tr class="">
+                        <th>Fecha</th>
+                        <th>Edificio</th>
+                        <th>Apartamento</th>
+                        <th>Referencia</th>
+                        <th class="text-end">Monto Bs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in pagos: %}
+                    <tr>
+                        <td>{{x[0]}}</td>
+                        <td class="fw-semibold">{{x[1]}}</td>
+                        <td class="fw-semibold">{{x[2]}}</td>
+                        <td>{{x[3]}}</td>
+                        <td class="text-end fw-semibold">{{x[4]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <!-- TAB 2 -->
+    <div class="tab-pane fade" id="gastos-tab-pane" role="tabpanel" aria-labelledby="gastos-tab" tabindex="0">
+        <div class="hstack gap-3 fs-5">
+            <div class="">Gastos: </div>
+            <div class="text-info">{{debitos}} Bs</div>
+            <div class="material-icons text-primary" style="cursor: pointer;" onclick="window.print()">printer</div>
+        </div>
+        <div class="table-responsive overflow-y-auto print" style="height: 70vh;">
+            <table class="table table-hover">
+                <thead class="sticky-top table-primary">
+                    <tr class="">
+                        <th>Fecha</th>
+                        <th>Concepto</th>
+                        <th>Referencia</th>
+                        <th class="text-end">Monto Bs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in gastos: %}
+                    <tr>
+                        <td>{{x[0]}}</td>
+                        <td class="fw-semibold text-uppercase fst-italic">{{x[1]}}</td>
+                        <td>{{x[2]}}</td>
+                        <td class="fw-semibold text-end">{{x[3]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <!-- TAB 3 -->
+    <div class="tab-pane fade" id="balance-tab-pane" role="tabpanel" aria-labelledby="balance-tab" tabindex="0">
+        {% set color = 'success' if creditos - debitos >= 0 else 'danger' %}
+        <div class="hstack gap-3 fs-5">
+            <div class="fw-semibold">Debitos: </div>
+            <div class="text-info">{{debitos}} Bs.</div>
+            <div class="fw-semibold">Creditos: </div>
+            <div class="text-info">{{creditos}} Bs.</div>
+            <div class="fw-semibold">Balance: </div>
+            <div class="text-{{color}}">{{creditos-debitos}} Bs.</div>
+            <div class="material-icons text-primary" style="cursor: pointer;" onclick="window.print()">printer</div>
+        </div>
+        <div class="table-responsive overflow-y-auto print" style="height: 70vh;">
+            <table class="table table-hover">
+                <thead class="sticky-top table-primary">
+                    <tr class="">
+                        <th>Fecha</th>
+                        <th class="">Gasto o Propiedad</th>
+                        <th class="">Referencia</th>
+                        <th class="text-end">Debito</th>
+                        <th class="text-end">Credito</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- fecha, concepto/propietario, ref, debito, credito -->
+                    {% for x in balance: %}
+                    <tr class="">
+                        <td class="">{{x[0]}}</td>
+                        <td class="text-uppercase fst-italic fw-semibold">{{x[1]}}</td>
+                        <td class="">{{x[2]}}</td>
+                        <td class="text-end fw-bold text-danger">{{x[3]}}</td>
+                        <td class="text-end fw-bold text-success">{{x[4]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock main %}

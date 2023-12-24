@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block main %}
+<h3>Generar Recibos</h3>
+<div class="row">
+    <div class="col">
+        {% include 'form_recibo.html' %}
+    </div>
+    <div class="col">
+        {% include 'form_recibos.html' %}
+    </div>
+</div>
+<hr>
+
+<h4>Ultimos agregados:</h4>
+<div class="table-responsive overflow-y-auto mt-3" style="height: 40vh;">
+    <table class="table table-hover">
+        <thead class="sticky-top table-primary">
+            <tr>
+                <th class="text-center">#</th>
+                <th class="text-center">Ed.</th>
+                <th class="text-center">Apto.</th>
+                <th class="text-center">Fecha</th>
+                <th class="text-start">Concepto</th>
+                <th class="text-end">USD$</th>
+                <th class="text-end">Saldo</th>
+                <th class="noprint text-center p-0"><span class="material-icons">build</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- rowid, edificio, apartamento, fecha, concepto, cuota_comun, cuota_edificio
+                        FROM recibos WHERE procesado = 0 -->
+            {% for x in ultimos:%}
+            <tr>
+                <td class="text-center">{{x[0]}}</td>
+                <td class="text-center fw-semibold">{{x[1]}}</td>
+                <td class="text-center fw-semibold">{{x[2]}}</em></td>
+                <td class="text-center">{{x[3]}}</td>
+                <td class=""><em>{{x[4]}}</em></td>
+                <td class="text-end fw-bold">{{x[5] + x[6]}}</td>
+                {% set saldo_color = 'danger' if x[7] > 0 else 'success' %}
+                <td class="text-end fw-bold text-{{saldo_color}}">{{x[7]}}</td>
+                <!--no procesado-->
+                <td class="text-center">
+                    {% if x[8] == 0 %}
+                    <a href="{{url_for('recibos_eliminar', id_or_period=x[0])}}">
+                        <span class="material-icons text-danger" onclick="deletePrevent(event)" style="cursor:pointer;"
+                            title="Elimiinar Recibo">backspace</span>
+                    </a>
+                </td>
+                    {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</div>
+{% endblock main %}

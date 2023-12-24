@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block main %}
+<h4>Pagos</h4>
+{% set accion = url_for('pagos_consultar') %}
+{% include 'select_fecha.html' %}
+{% include 'select_propietario.html' %}
+<hr>
+<!-- tabla pagos rowid + 8 values = 9 -->
+<div class="table-responsive overflow-y-auto mt-3" style="height: 30vh;">
+    <table class="table table-hover">
+        <thead class="sticky-top table-primary">
+            <tr class="text-center">
+                <th class="text-center">#</th>
+                <th class="text-center">Ed.</th>
+                <th class="text-center">Ap.</th>
+                <th class="text-center">Fecha</th>
+                <th class="text-end">Ref</th>
+                <th class="text-end">BsD</th>
+                <th class="text-end">$USD</th>
+                <th class="text-end">Saldo</th>
+                <th class="text-center p-0"><span class="material-icons">build</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in datos_tabla: %}
+            <tr>
+                <td class="text-center">{{x[0]}}</td>
+                <td class="text-center fw-semibold">{{x[1]}}</td>
+                <td class="text-center fw-semibold">{{x[2]}}</td>
+                <td class="text-center">{{x[3]}}</td>
+                <td class="text-end">{{x[4]}}</td>
+                <td class="text-end">{{x[5]}}</td>
+                <td class="text-end">{{x[6]}}</td>
+                <td class="text-end fw-semibold">{{x[7]}}</td>
+                <td class="text-center">
+                    {% if x[8] == 0: %}
+                    <a class="text-danger" style="text-decoration: none;" href="{{ url_for('pago_eliminar', rowid=x[0]) }}"
+                        title="Eliminar" onclick="deletePrevent(event)">
+                        <span class="material-icons">
+                            backspace
+                        </span>
+                    </a>
+                    {% endif %}
+                    {% if x[7] > 0: %}
+                    <a class="text-primary" style="text-decoration: none;" href="{{ url_for('pagos_aplicar', pago_id=x[0]) }}"
+                        title="Aplicar">
+                        <span class="material-icons">
+                            attach_money
+                        </span>
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</div>
+{% endblock main %}

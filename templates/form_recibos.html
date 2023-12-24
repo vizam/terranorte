@@ -1,5 +1,5 @@
 <fieldset>
-    <form class="" action="/recibos/almacenar/mes" method="POST">
+    <form class="" action="{{url_for('recibos_almacenar')}}" method="POST">
         <legend>Generar Recibos del Mes</legend>
 
         <div class="form-floating mb-3">
@@ -13,7 +13,7 @@
         </div>
         <div class="form-floating mb-3">
             <input class="form-control text-primary mt-3" type="number" id="cuota_comun" name="cuota_comun" value="0"
-                placeholder="Cuota comun" required>
+                min="1" placeholder="Cuota comun" required>
             <label for="cuota_comun">Cuota comun</label>
         </div>
         <div class="form-floating mb-3">

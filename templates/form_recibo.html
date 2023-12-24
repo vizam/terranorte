@@ -1,6 +1,6 @@
 <fieldset>
     <legend>Propietario</legend>
-    <form class="from-group" action="/recibo/almacenar" method="POST">
+    <form class="from-group" action="{{url_for('recibo_almacenar')}}" method="POST">
         <div class="row">
             <div class="col">
                 <div class="form-floating">
@@ -33,7 +33,7 @@
             <div class="col">
                 <div class="form-floating mb-3">
                     <input class="form-control text-primary" type="number" id="cuota_comun" name="cuota_comun"
-                        placeholder="Cuota comun" value="0" required>
+                        placeholder="Cuota comun" value="0" min="1" required>
                     <label for="cuota_comun">Cuota comun</label>
                 </div>
             </div>

@@ -11,11 +11,10 @@ def crear_db():
                         propietario     TEXT,
                         correo          TEXT,
                         telefono        TEXT,
-                        CHECK   (   edificio IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11 ,12, 13, 14, 15, 16) 
-                                    AND 
-                                    apartamento IN ('pba', 'pbb', 'pbc', '1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c')
-                                ),        
-                        PRIMARY KEY (edificio ,apartamento))''')
+                        CHECK           (edificio IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11 ,12, 13, 14, 15, 16) 
+                                        AND 
+                                        apartamento IN ('pba', 'pbb', 'pbc', '1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c'))        
+                        PRIMARY KEY     (edificio ,apartamento))''')
     cur.execute('''CREATE TABLE IF NOT EXISTS recibos (
                         edificio        INTEGER NOT NULL,
                         apartamento     TEXT NOT NULL,
@@ -24,10 +23,12 @@ def crear_db():
                         cuota_comun     INTEGER NOT NULL,
                         cuota_edificio  INTEGER NOT NULL,
                         saldo           INTEGER NOT NULL,
-                        procesado       INTEGER NOT NULL DEFAULT 0
-                        CHECK   (   edificio IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11 ,12, 13, 14, 15, 16) 
-                                    AND 
-                                    apartamento IN ('pba', 'pbb', 'pbc', '1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c') ) )''')
+                        procesado       INTEGER NOT NULL DEFAULT 0,
+                        UNIQUE          (edificio, apartamento, fecha)
+                        CHECK           (edificio IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11 ,12, 13, 14, 15, 16) 
+                                        AND 
+                                        apartamento IN ('pba', 'pbb', 'pbc', '1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c')
+                                        AND cuota_comun > 0 AND cuota_edificio >=0))''')
     cur.execute('''CREATE TABLE IF NOT EXISTS pagos (
                         edificio        INTEGER,
                         apartamento     TEXT,        
@@ -36,7 +37,8 @@ def crear_db():
                         pago_bs         REAL NOT NULL DEFAULT 0.00,
                         pago_usd        INTEGER NOT NULL,
                         saldo           INTEGER NOT NULL,
-                        procesado       INTEGER NOT NULL DEFAULT 0   )''')
+                        procesado       INTEGER NOT NULL DEFAULT 0,
+                        CHECK           (pago_usd > 0))''')
     cur.execute('''CREATE TABLE IF NOT EXISTS gastos (
                         fecha           TEXT NOT NULL,
                         concepto        TEXT NOT NULL,
@@ -45,8 +47,9 @@ def crear_db():
                         gasto_usd       INTEGER DEFAULT 0,
                         fondo           TEXT NOT NULL,
                         procesado       INTEGER DEFAULT 0,
-                        CHECK ( fondo   IN ('comun',    
-                                            'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8', 'e9', 'e10', 'e11', 'e12', 'e13', 'e14', 'e15', 'e16' ))) ''')
+                        CHECK           (fondo IN ('comun', 'e1', 'e2', 'e3', 'e4', 'e5', 
+                                                    'e6', 'e7', 'e8', 'e9', 'e10', 'e11', 
+                                                    'e12', 'e13', 'e14', 'e15', 'e16' ))) ''')
     
     cur.execute('''CREATE TABLE IF NOT EXISTS fondos  (
                         comun           INTEGER NOT NULL DEFAULT 0,
@@ -117,5 +120,5 @@ def iniciar_fondos():
 
 crear_db()
 cargar_unidades()
-cargar_recibos()
+#cargar_recibos()
 iniciar_fondos()

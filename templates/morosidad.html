@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block main%}
+<h4>Morosidad<span class="material-icons text-info" Title="Tres o mas recibos por cobrar" style="cursor: help;">help</span></h4>
+<div class="hstack gap-3">
+    <div class="fs-5 fw-semibold">Fecha: </div>
+    <div class="fs-5 text-info">{{hoy}} </div>
+    <div class="fs-5 fw-semibold">Total: </div>
+    <div class="fs-5 text-info">{{deuda}} USD$</div>
+</div>
+<div class="table-responsive overflow-y-auto" style="height: 70vh;">
+    <table class="table table-hover">
+        <thead class="sticky-top table-primary">
+            <tr class="">
+                <th>Edificio</th>
+                <th>Apartamento</th>
+                <th class="text-start">Propietario</th>
+                <th class="text-center">Recibos</th>
+                <th class="text-end">Monto USD$</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- tabla: edificio, apartamento, propietario, fechas, 2 columnas de cuota (where procesado = 0) -->
+            {% for x in morosidad: %}
+            <tr>
+                <td class="fw-semibold">{{x[0]}}</td>
+                <td class="fw-semibold">{{x[1]}}</td>
+                <td class="fw-semibold fst-italic">{{x[2]}}</td>
+                <td class="text-center fw-bold">{{x[3]}}</td>
+                <td class="text-end fw-bold">{{x[4]}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</div>
+{% endblock main %}

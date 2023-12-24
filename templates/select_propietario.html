@@ -1,0 +1,19 @@
+<fieldset class="select mt-2 mb-2">
+    <legend></legend>
+    <!-- <legend>Seleccionar Propietario</legend> -->
+    <form class="row" action="{{accion}}" method="GET">
+        <div class="col">
+            <select class="form-select" id="propietarios" name="propietario">
+                {% for x in propietarios: %}
+                {% set valor = x[0]|string + '-' + x[1] + '-' + x[2] %}
+                <option value="{{valor}}">{{valor}}
+                </option>
+                {% endfor %}
+
+            </select>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" type="submit" value="Actualizar">Consultar Propietario</button>
+        </div>
+    </form>
+</fieldset>

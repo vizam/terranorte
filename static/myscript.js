@@ -7,7 +7,7 @@ function editarPropietario(evt) {
     for (elemento of elementos) {
         elemento.value = evt.target.dataset[elemento.name];
     }
-    document.querySelector("form[id='editar_propietario'").action = `/propietarios/editar/${evt.target.dataset['edificio']}/${evt.target.dataset['apartamento']}`;
+    // document.querySelector("form[id='editar_propietario'").action = `/propietarios/editar/${evt.target.dataset['edificio']}/${evt.target.dataset['apartamento']}`;
     window.scrollTo(0,0)
 }
 
@@ -37,6 +37,12 @@ function editarRecibo(evt) {
         elemento.setAttribute('readonly', 'readonly');
     }
     window.scrollTo(0,0)
+}
+
+function pagoIdentificar(evt) {
+    document.getElementById('field_identificar').disabled = false;
+    document.getElementById('rowid').value = evt.target.dataset['rowid']
+
 }
 
 function deletePrevent(evt) {

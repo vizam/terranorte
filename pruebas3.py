@@ -34,4 +34,11 @@ import sqlite3
 # print(valor)
 # cur.execute(f'''SELECT  ''')
 
-import bottle_flash
+
+
+con = sqlite3.connect('terranorte.db')
+cur = con.cursor()
+cur.execute('''select edificio from unidades where propietario='Victor Zambrano' ''')
+print(cur.fetchone())
+cur.close()
+con.close()
